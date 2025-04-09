@@ -13,10 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +36,11 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
+import com.example.restaurantreviewapp.ui.theme.Grey
+import com.example.restaurantreviewapp.ui.theme.Purple40
+import com.example.restaurantreviewapp.ui.theme.Purple80
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
+import com.example.restaurantreviewapp.ui.theme.Turquoise
 
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             RestaurantReviewAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    RestaurantList(modifier = Modifier.padding(innerPadding))
+                    App(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -48,15 +59,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ListItem(modifier: Modifier = Modifier) {
-
     Card(modifier = Modifier
-        .padding(3.dp)
+        .padding(7.dp)
         .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray),
         shape = RoundedCornerShape(10.dp)
     ) {
         Row(modifier = Modifier
-            .background(color = Color.LightGray)
-            .height(150.dp),
+            .background(color = Grey)
+            .height(150.dp)
+            .padding(3.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier
                 .weight(0.3f)
@@ -69,7 +80,7 @@ fun ListItem(modifier: Modifier = Modifier) {
                     contentDescription = "image"
                 )
             }
-            Column(modifier = Modifier.weight(0.7f).padding(2.dp)) {
+            Column(modifier = Modifier.weight(0.7f).padding(3.dp)) {
                 Row()
                 {
                     Text(
@@ -107,11 +118,36 @@ fun RestaurantList(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar(modifier: Modifier = Modifier) {
+    TopAppBar({ Text("Restaurants")}, modifier, navigationIcon = {
+        IconButton(onClick = { /* do something */ }) {
+            Icon(
+                imageVector = Icons.Filled.Menu,
+                contentDescription = "menu"
+            )
+        }
+    },
+        colors = TopAppBarColors(Turquoise, Color.Yellow, Color.White, Color.White, Color.White))
+}
+
+@Composable
+fun App(modifier: Modifier = Modifier) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row {
+            AppBar()
+        }
+        Row {
+            RestaurantList(modifier = Modifier.padding(3.dp))
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
-fun RListPreview() {
+fun AppPreview() {
     RestaurantReviewAppTheme {
-        RestaurantList()
+        App()
     }
 }
