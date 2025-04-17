@@ -3,6 +3,7 @@ package com.example.restaurantreviewapp
 import StarEmpty
 import StarFull
 import StarHalf
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -40,36 +42,42 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
+import com.example.restaurantreviewapp.dto.RestaurantDto
+import com.example.restaurantreviewapp.dto.RestaurantsViewModel
 import com.example.restaurantreviewapp.ui.theme.Grey
-import com.example.restaurantreviewapp.ui.theme.Purple40
-import com.example.restaurantreviewapp.ui.theme.Purple80
-import com.example.restaurantreviewapp.ui.theme.PurpleGrey80
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), ViewModelStoreOwner {
+    private lateinit var model: RestaurantsViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        model = ViewModelProvider(this)[RestaurantsViewModel::class.java]
         enableEdgeToEdge()
         setContent {
             RestaurantReviewAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    App(modifier = Modifier.padding(innerPadding))
+                    App(modifier = Modifier.padding(innerPadding), model)
                 }
             }
         }
     }
 }
 
+class ReviewApplication() : Application() {
+}
+
 @Composable
-fun ListItem(modifier: Modifier = Modifier) {
+fun ListItem(modifier: Modifier = Modifier, restaurant: RestaurantDto) {
     Card(modifier = Modifier
         .padding(7.dp)
         .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray),
@@ -77,7 +85,7 @@ fun ListItem(modifier: Modifier = Modifier) {
     ) {
         Row(modifier = Modifier
             .background(color = Grey)
-            .height(150.dp)
+            .height(155.dp)
             .padding(3.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier
@@ -91,28 +99,30 @@ fun ListItem(modifier: Modifier = Modifier) {
                     contentDescription = "image"
                 )
             }
-            Column(modifier = Modifier.weight(0.7f).padding(3.dp)) {
+            Column(modifier = Modifier
+                .weight(0.7f)
+                .padding(3.dp)) {
                 Row()
                 {
                     Text(
-                        "NAME",
+                        restaurant.name,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleMedium)
                 }
                 Row {
-                    StarRating(modifier, 4.2f, 12)
+                    StarRating(modifier, restaurant.rating, restaurant.review_count)
                 }
                 Row {
-                    Text("STYLE".plus(" ").plus("PRICE"))
+                    Text(restaurant.cuisine.plus(" ").plus(restaurant.price_range))
                 }
                 Row {
-                    Text("STREET ADDRESS")
+                    Text(restaurant.address.substringBefore(","))
                 }
                 Row {
-                    Text("POSTAL INFO")
+                    Text(restaurant.address.substringAfter(", "))
                 }
                 Row {
-                    Text("OPEN/CLOSED")
+                    Text(restaurant.open_status)
                 }
             }
         }
@@ -120,11 +130,12 @@ fun ListItem(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun RestaurantList(modifier: Modifier = Modifier) {
+fun RestaurantList(modifier: Modifier = Modifier, model: RestaurantsViewModel) {
+    if (model.state.collectAsState().value.loading) return
+    val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantList
     LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
-        items(3) {
-                i -> ListItem(modifier = Modifier.padding(8.dp)
-        )
+        items(restaurants.size) {
+                i -> ListItem(modifier = Modifier.padding(8.dp), restaurant = restaurants[i])
         }
     }
 }
@@ -144,13 +155,13 @@ fun AppBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun App(modifier: Modifier = Modifier) {
+fun App(modifier: Modifier = Modifier, model: RestaurantsViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
             AppBar()
         }
         Row {
-            RestaurantList(modifier = Modifier.padding(3.dp))
+            RestaurantList(modifier = Modifier.padding(3.dp), model)
         }
     }
 }
@@ -199,10 +210,10 @@ fun CustomIcon(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun AppPreview() {
-    RestaurantReviewAppTheme {
-        App()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun AppPreview() {
+//    RestaurantReviewAppTheme {
+//        App()
+//    }
+//}
