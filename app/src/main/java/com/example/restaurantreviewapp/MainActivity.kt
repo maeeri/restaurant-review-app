@@ -24,18 +24,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
-import com.example.restaurantreviewapp.dto.RestaurantsViewModel
+import com.example.restaurantreviewapp.dto.AppViewModel
 import com.example.restaurantreviewapp.ui.composables.RestaurantList
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 
 
 class MainActivity : ComponentActivity(), ViewModelStoreOwner {
-    private lateinit var model: RestaurantsViewModel
+    private lateinit var model: AppViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = ViewModelProvider(this)[RestaurantsViewModel::class.java]
+        model = ViewModelProvider(this)[AppViewModel::class.java]
         enableEdgeToEdge()
         setContent {
             RestaurantReviewAppTheme {
@@ -64,7 +64,7 @@ fun AppBar(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun App(modifier: Modifier = Modifier, model: RestaurantsViewModel) {
+fun App(modifier: Modifier = Modifier, model: AppViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row {
             AppBar()

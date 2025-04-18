@@ -20,13 +20,13 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.example.restaurantreviewapp.dto.RestaurantDto
-import com.example.restaurantreviewapp.dto.RestaurantsViewModel
+import com.example.restaurantreviewapp.dto.AppViewModel
 import com.example.restaurantreviewapp.ui.theme.Grey
 
 @Composable
-fun RestaurantList(modifier: Modifier = Modifier, model: RestaurantsViewModel) {
-    if (model.state.collectAsState().value.loading) return
-    val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantList
+fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel) {
+    if (model.state.collectAsState().value.restaurantListState.loading) return
+    val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantListState.restaurantList
     LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         items(restaurants.size) {
                 i -> ListItem(modifier = Modifier.padding(8.dp), child = { RestaurantItem(restaurant = restaurants[i]) })
