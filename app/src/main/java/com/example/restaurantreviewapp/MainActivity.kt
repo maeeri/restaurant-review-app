@@ -5,46 +5,87 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.restaurantreviewapp.containers.AppContainer
 import com.example.restaurantreviewapp.dto.AppViewModel
+import com.example.restaurantreviewapp.ui.composables.LoginPage
 import com.example.restaurantreviewapp.ui.composables.RestaurantListPage
 import com.example.restaurantreviewapp.ui.composables.RestaurantPage
+import dagger.BindsInstance
+import dagger.Component
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 
 
-class MainActivity : ComponentActivity(), ViewModelStoreOwner {
-    private lateinit var model: AppViewModel
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        model = ViewModelProvider(this)[AppViewModel::class.java]
+        var model: AppViewModel = ViewModelProvider(this).get(AppViewModel::class.java)
         enableEdgeToEdge()
         setContent {
-            val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = "RestaurantListPage") {
-                composable("RestaurantListPage") {
-                    RestaurantListPage(
-                        model = model,
-                        navController = navController,
-                    )
-                }
-
-                composable("RestaurantPage") {
-                    RestaurantPage(
-                        model = model,
-                        navController = navController
-                    )
-                }
-            }
+            AppNavHost(model = model, startDestination = "RestaurantListPage")
         }
     }
 }
 
-class ReviewApplication : Application()
+@Composable
+fun AppNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
+    startDestination: String,
+    model: AppViewModel
+) {
+    NavHost(navController = navController, startDestination = startDestination) {
+        composable("RestaurantListPage") {
+            RestaurantListPage(
+                model = model,
+                navController = navController
+            )
+        }
 
+        composable("RestaurantPage") {
+            RestaurantPage(
+                model = model,
+                navController = navController
+            )
+        }
 
+        composable("Login") {
+            LoginPage(navController = navController)
+        }
+    }
+}
+
+@HiltAndroidApp
+class ReviewApplication : Application() {
+    private lateinit var container: AppContainer
+
+    override fun onCreate() {
+        super.onCreate()
+        container = AppContainer(this)
+    }
+}
+
+@Component
+internal interface AppComponent {
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        fun application(application: Application?): Builder? // Application extends Context
+        fun build(): AppComponent?
+    }
+
+    fun inject(app: ReviewApplication?)
+}
 
 
 

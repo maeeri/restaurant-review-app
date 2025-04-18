@@ -8,13 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-const val baseUrl = "http://10.0.2.2:8000/api/restaurants/"
-val retroFit: Retrofit = Retrofit.Builder()
-    .baseUrl(baseUrl)
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
 
-interface RestaurantsApi {
+interface RestaurantsDataApi {
     @GET("ratings")
     suspend fun getRestaurants() : List<RestaurantDto>
 
@@ -29,5 +24,25 @@ interface RestaurantsApi {
     ) : List<RatingDto>
 }
 
-val restaurantService: RestaurantsApi = retroFit.create(RestaurantsApi::class.java)
+interface RestaurantsDataService {
+    suspend fun getRestaurants(): List<RestaurantDto>
+    suspend fun getRestaurant(id: Int): RestaurantDto
+    suspend fun getRestaurantRatings(id: Int): List<RatingDto>
+}
 
+class RestaurantsDataServiceImplementation(private val api: RestaurantsDataApi) : RestaurantsDataService {
+    override suspend fun getRestaurants(): List<RestaurantDto> {
+        val restaurants = api.getRestaurants()
+        return restaurants
+    }
+
+    override suspend fun getRestaurant(id: Int): RestaurantDto {
+        val restaurant = api.getRestaurant(id)
+        return restaurant
+    }
+
+    override suspend fun getRestaurantRatings(id: Int): List<RatingDto> {
+        val ratings = api.getRestaurantRatings(id)
+        return ratings
+    }
+}

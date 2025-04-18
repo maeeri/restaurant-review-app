@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.restaurantreviewapp.ui.theme.CardBackground
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 
@@ -91,7 +92,7 @@ fun ListItem(modifier: Modifier = Modifier, child: @Composable() (modifier: Modi
         .background(CardBackground),
         shape = RoundedCornerShape(10.dp)
     ) {
-        child(Modifier.background(CardBackground))
+        child(modifier.background(CardBackground))
     }
 }
 

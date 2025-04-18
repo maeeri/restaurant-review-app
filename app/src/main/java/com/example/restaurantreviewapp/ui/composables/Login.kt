@@ -4,13 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.InputChip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -39,10 +36,14 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController) {
                 Row {
                     AppBar(
                         text = "Login",
-                        navController = navController)
+                        navController = navController
+                    )
                 }
 
-                Card(modifier.background(CardBackground).padding(50.dp).align(Alignment.CenterHorizontally)) {
+                Card(modifier
+                    .background(CardBackground)
+                    .padding(50.dp)
+                    .align(Alignment.CenterHorizontally)) {
                     Row {
                         TextField(
                             modifier = modifier.background(Color.White),
@@ -60,7 +61,8 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController) {
                         )
                     }
                     Spacer(modifier.padding(8.dp))
-                    Button(onClick = {/* add the magic*/}, modifier.align(Alignment.CenterHorizontally)) {
+                    Button(onClick = {/* add the magic*/}, modifier
+                        .align(Alignment.CenterHorizontally)) {
                         Text("Login")
                     }
                     Spacer(modifier.padding(8.dp))

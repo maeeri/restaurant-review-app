@@ -91,7 +91,8 @@ fun RestaurantPage(modifier: Modifier = Modifier, model: AppViewModel, navContro
                 Row {
                     AppBar(
                         text = "Reviews",
-                        navController = navController)
+                        navController = navController
+                    )
                 }
                 Row {
                     RestaurantReviews(model = model)
