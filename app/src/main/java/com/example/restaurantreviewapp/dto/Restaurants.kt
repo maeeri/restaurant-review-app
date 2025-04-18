@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.sql.Timestamp
 
 data class RestaurantDto (
     val id: Int,
@@ -52,7 +51,6 @@ class AppViewModel : ViewModel() {
 
     init {
         getRestaurants()
-        loadRestaurant(1)
     }
 
     fun loadRestaurant(id: Int) {

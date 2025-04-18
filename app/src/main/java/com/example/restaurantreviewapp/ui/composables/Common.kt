@@ -11,9 +11,15 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +31,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.restaurantreviewapp.ui.theme.CardBackground
+import com.example.restaurantreviewapp.ui.theme.Turquoise
 
 @Composable
 fun CustomIcon(
@@ -76,7 +83,7 @@ fun StarRating(modifier: Modifier = Modifier, rating: Float) {
 
 @Composable
 fun ListItem(modifier: Modifier = Modifier, child: @Composable() (modifier: Modifier) -> Unit) {
-    Card(modifier = Modifier
+    Card(modifier = modifier
         .padding(7.dp)
         .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray)
         .background(CardBackground),
@@ -85,3 +92,19 @@ fun ListItem(modifier: Modifier = Modifier, child: @Composable() (modifier: Modi
         child(Modifier.background(CardBackground))
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar(modifier: Modifier = Modifier, text: String) {
+    TopAppBar({ Text(text)}, modifier, navigationIcon = {
+        IconButton(onClick = { /* do something */ }) {
+            Icon(
+                imageVector = Icons.Filled.Menu,
+                contentDescription = "menu"
+            )
+        }
+    },
+        colors = TopAppBarColors(Turquoise, Color.Yellow, Color.White, Color.White, Color.White)
+    )
+}
+

@@ -1,15 +1,17 @@
 package com.example.restaurantreviewapp.ui.composables
 
-import android.widget.Space
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,11 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
@@ -31,14 +32,23 @@ import com.example.restaurantreviewapp.dto.AppViewModel
 import com.example.restaurantreviewapp.ui.theme.CardBackground
 import com.example.restaurantreviewapp.ui.theme.DarkGreen
 import com.example.restaurantreviewapp.ui.theme.Orange
+import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 
 @Composable
-fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel) {
+fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
     if (model.state.collectAsState().value.restaurantListState.loading) return
     val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantListState.restaurantList
     LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         items(restaurants.size) {
-                i -> ListItem(modifier = Modifier.padding(8.dp), child = { RestaurantItem(restaurant = restaurants[i]) })
+            i -> ListItem(modifier = Modifier
+                .padding(8.dp)
+                .clickable {
+                    onRestaurantClick(restaurants[i], model, navController)
+                },
+                child = {
+                    RestaurantItem(restaurant = restaurants[i])
+                    }
+            )
         }
     }
 }
@@ -112,4 +122,23 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
 }
 
 
+@Composable
+fun RestaurantListPage(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
+    RestaurantReviewAppTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                Row {
+                    AppBar(text = "Restaurants")
+                }
+                Row {
+                    RestaurantList(modifier = Modifier.padding(3.dp), model, navController)
+                }
+            }
+        }
+    }
+}
 
+fun onRestaurantClick(restaurant: RestaurantDto, model: AppViewModel, navController: NavController) {
+    model.loadRestaurant(restaurant.id)
+    navController.navigate("RestaurantPage")
+}
