@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.restaurantreviewapp.dto.AppViewModel
 import com.example.restaurantreviewapp.dto.RatingDto
 import com.example.restaurantreviewapp.ui.theme.CardBackground
@@ -83,12 +84,14 @@ fun RestaurantReviews(modifier: Modifier = Modifier, model: AppViewModel) {
 
 
 @Composable
-fun RestaurantPage(modifier: Modifier = Modifier, model: AppViewModel) {
+fun RestaurantPage(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
     RestaurantReviewAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                 Row {
-                    AppBar(text = "Reviews")
+                    AppBar(
+                        text = "Reviews",
+                        navController = navController)
                 }
                 Row {
                     RestaurantReviews(model = model)

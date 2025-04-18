@@ -128,7 +128,10 @@ fun RestaurantListPage(modifier: Modifier = Modifier, model: AppViewModel, navCo
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                 Row {
-                    AppBar(text = "Restaurants")
+                    AppBar(
+                        text = "Restaurants",
+                        navController = navController
+                    )
                 }
                 Row {
                     RestaurantList(modifier = Modifier.padding(3.dp), model, navController)

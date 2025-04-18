@@ -32,7 +32,10 @@ class MainActivity : ComponentActivity(), ViewModelStoreOwner {
                 }
 
                 composable("RestaurantPage") {
-                    RestaurantPage(model = model)
+                    RestaurantPage(
+                        model = model,
+                        navController = navController
+                    )
                 }
             }
         }
