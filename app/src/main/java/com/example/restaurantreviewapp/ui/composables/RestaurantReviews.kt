@@ -42,7 +42,7 @@ fun ReviewList(modifier: Modifier = Modifier, model: AppViewModel) {
 
 @Composable
 fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto) {
-    var reviewTimeString: String = ""
+    var reviewTimeString = ""
     if (review.date_rated != null) {
         try {
             reviewTimeString = LocalDateTime
