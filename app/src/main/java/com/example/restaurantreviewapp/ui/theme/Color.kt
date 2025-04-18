@@ -11,5 +11,8 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val Turquoise = Color(0xff01a380)
-val Grey = Color(0xffededed)
+val CardBackground = Color(0xffededed)
 val Yellow = Color(0xfffff520)
+
+val DarkGreen = Color(0xff046A38)
+val Orange = Color(0xffDC582A)

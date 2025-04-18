@@ -1,9 +1,11 @@
 package com.example.restaurantreviewapp.ui.composables
 
+import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,15 +15,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.example.restaurantreviewapp.dto.RestaurantDto
 import com.example.restaurantreviewapp.dto.AppViewModel
-import com.example.restaurantreviewapp.ui.theme.Grey
+import com.example.restaurantreviewapp.ui.theme.CardBackground
+import com.example.restaurantreviewapp.ui.theme.DarkGreen
+import com.example.restaurantreviewapp.ui.theme.Orange
 
 @Composable
 fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel) {
@@ -35,10 +44,19 @@ fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel) {
 }
 
 @Composable
-fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto) {
+fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
+    if (restaurant == null) return
+
+    val statusColor: Color = when(restaurant.open_status.lowercase()) {
+        "open" -> DarkGreen
+        "closed" -> Color.Red
+        "closing soon" -> Orange
+        else -> Color.Black
+    }
+
     Row(modifier = Modifier
-        .background(color = Grey)
-        .height(155.dp)
+        .background(color = CardBackground)
+        .height(200.dp)
         .padding(3.dp),
         verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier
@@ -54,16 +72,25 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto) {
         }
         Column(modifier = Modifier
             .weight(0.7f)
-            .padding(3.dp)) {
+            .padding(5.dp)) {
             Row()
             {
                 Text(
                     restaurant.name,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium)
+                    style = MaterialTheme.typography.titleLarge)
             }
             Row {
-                StarRating(modifier, restaurant.rating, restaurant.review_count)
+                Column {
+                    StarRating(modifier, restaurant.rating)
+                }
+                Spacer(modifier.padding(3.dp))
+                Column {
+                    Row {
+                        Text("(".plus(restaurant.review_count).plus(")"),
+                            modifier.align(Alignment.CenterVertically))
+                    }
+                }
             }
             Row {
                 Text(restaurant.cuisine.plus(" ").plus(restaurant.price_range))
@@ -75,7 +102,10 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto) {
                 Text(restaurant.address.substringAfter(", "))
             }
             Row {
-                Text(restaurant.open_status)
+                Text(restaurant.open_status, fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = statusColor
+                )
             }
         }
     }

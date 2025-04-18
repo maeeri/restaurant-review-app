@@ -19,13 +19,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.example.restaurantreviewapp.dto.AppViewModel
+import com.example.restaurantreviewapp.ui.composables.ListItem
+import com.example.restaurantreviewapp.ui.composables.RestaurantItem
 import com.example.restaurantreviewapp.ui.composables.RestaurantList
+import com.example.restaurantreviewapp.ui.composables.RestaurantReviews
+import com.example.restaurantreviewapp.ui.composables.ReviewItem
+import com.example.restaurantreviewapp.ui.composables.ReviewList
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 
@@ -70,7 +76,8 @@ fun App(modifier: Modifier = Modifier, model: AppViewModel) {
             AppBar()
         }
         Row {
-            RestaurantList(modifier = Modifier.padding(3.dp), model)
+            // RestaurantList(modifier = Modifier.padding(3.dp), model)
+            RestaurantReviews(model = model)
         }
     }
 }

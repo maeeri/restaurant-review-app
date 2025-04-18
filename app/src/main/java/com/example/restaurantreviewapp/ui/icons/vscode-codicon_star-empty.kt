@@ -14,8 +14,8 @@ val StarEmpty: ImageVector
 		}
 		_StarEmpty = ImageVector.Builder(
             name = "StarEmpty",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
+            defaultWidth = 30.dp,
+            defaultHeight = 30.dp,
             viewportWidth = 16f,
             viewportHeight = 16f
         ).apply {

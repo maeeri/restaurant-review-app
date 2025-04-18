@@ -5,6 +5,8 @@ import StarFull
 import StarHalf
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -22,7 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.restaurantreviewapp.ui.theme.Grey
+import com.example.restaurantreviewapp.ui.theme.CardBackground
 
 @Composable
 fun CustomIcon(
@@ -35,7 +37,7 @@ fun CustomIcon(
     xShadowOffset: Dp = 1.dp
 ) {
     //Icon shadow modified from https://medium.com/@yuriyskul/jetpack-compose-creating-direct-and-spread-light-shadows-for-vector-drawables-api-12-230362982a0f
-    Box(modifier = Modifier.background(color = Grey,shape = CircleShape),
+    Box(modifier = Modifier.background(color = CardBackground,shape = CircleShape),
         contentAlignment = Alignment.Center) {
         Icon(
             rememberVectorPainter(imageVector),
@@ -56,26 +58,30 @@ fun CustomIcon(
 
 
 @Composable
-fun StarRating(modifier: Modifier = Modifier, rating: Float, ratingCount: Int) {
-    for (i in 1..5) {
-        if (i <= rating) {
-            CustomIcon(imageVector = StarFull)
-        } else if (i - rating < 1) {
-            CustomIcon(imageVector = StarHalf)
-        } else {
-            CustomIcon(imageVector = StarEmpty)
+fun StarRating(modifier: Modifier = Modifier, rating: Float) {
+    Row {
+        for (i in 1..5) {
+            if (i <= rating) {
+                CustomIcon(imageVector = StarFull)
+            } else if (i - rating < 1) {
+                CustomIcon(imageVector = StarHalf)
+            } else {
+                CustomIcon(imageVector = StarEmpty)
+            }
         }
+        Spacer(Modifier.padding(3.dp))
+        Text(rating.toString(), modifier.align(Alignment.CenterVertically))
     }
-    Text(rating.toString().plus(" (".plus(ratingCount).plus(")")))
 }
 
 @Composable
-fun ListItem(modifier: Modifier = Modifier, child: @Composable() () -> Unit) {
+fun ListItem(modifier: Modifier = Modifier, child: @Composable() (modifier: Modifier) -> Unit) {
     Card(modifier = Modifier
         .padding(7.dp)
-        .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray),
+        .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray)
+        .background(CardBackground),
         shape = RoundedCornerShape(10.dp)
     ) {
-        child()
+        child(Modifier.background(CardBackground))
     }
 }

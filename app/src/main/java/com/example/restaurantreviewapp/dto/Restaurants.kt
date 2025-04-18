@@ -40,10 +40,10 @@ data class AppState (
 
 data class RatingDto (
     val id: Int,
-    val user_id: Int,
+    val user_id: Int?,
     val value: Float,
-    val description: String,
-    val date_rated: Timestamp
+    val description: String?,
+    val date_rated: String?
 )
 
 class AppViewModel : ViewModel() {
@@ -52,6 +52,11 @@ class AppViewModel : ViewModel() {
 
     init {
         getRestaurants()
+        loadRestaurant(1)
+    }
+
+    fun loadRestaurant(id: Int) {
+        getRestaurantReviews(id)
     }
 
     private fun getRestaurants() {

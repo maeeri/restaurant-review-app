@@ -14,8 +14,8 @@ val StarHalf: ImageVector
 		}
 		_StarHalf = ImageVector.Builder(
             name = "StarHalf",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
+            defaultWidth = 30.dp,
+            defaultHeight = 30.dp,
             viewportWidth = 16f,
             viewportHeight = 16f
         ).apply {
