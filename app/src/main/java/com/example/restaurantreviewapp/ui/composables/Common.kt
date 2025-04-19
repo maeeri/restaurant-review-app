@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.restaurantreviewapp.ui.theme.CardBackground
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 

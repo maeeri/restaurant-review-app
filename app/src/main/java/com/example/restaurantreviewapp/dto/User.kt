@@ -5,5 +5,5 @@ data class UserState (
     val username: String? = null,
     val firstName: String? = null,
     val lastName: String? = null,
-    val error: Error? = null
+    val error: String? = null
 )

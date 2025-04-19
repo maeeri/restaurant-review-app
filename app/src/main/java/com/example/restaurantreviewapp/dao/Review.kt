@@ -34,5 +34,5 @@ interface ReviewDao {
     suspend fun insert(review: Review)
 
     @Query("SELECT * FROM reviews WHERE user_id=:userId")
-    fun getUserReviews(userId: Int): List<Review>
+    suspend fun getUserReviews(userId: Int): List<Review>
 }
