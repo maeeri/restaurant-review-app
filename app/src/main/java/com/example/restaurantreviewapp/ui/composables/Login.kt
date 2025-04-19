@@ -1,5 +1,7 @@
 package com.example.restaurantreviewapp.ui.composables
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,8 +47,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, model
                 }
 
                 CustomCard(modifier) {
-                    SignUpForm(modifier, state.signUpVisible,
-                        { model.setSignUpVisibility(!state.signUpVisible) }, { println("...") })
+                    SignUpForm(modifier, model)
                 }
             }
         }
@@ -54,33 +55,34 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, model
 }
 
 @Composable
-fun SignUpForm(modifier: Modifier = Modifier, visible: Boolean, setVisibility: () -> Unit, onClickAction: () -> Unit) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun SignUpForm(modifier: Modifier = Modifier, model: AppViewModel) {
     var repeatPassword by remember { mutableStateOf("") }
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
+    val loginState = model.state.collectAsState().value.loginState
+    val visible = loginState.signUpVisible
 
     val actionText: String = if (visible) "SIGN UP" else "SIGN IN"
     val showButtonText: String = if(visible) "BACK TO SIGN IN" else "REGISTER"
 
     Column(modifier.padding(20.dp)) {
         Row(modifier.align(Alignment.CenterHorizontally)) {
-            Text(actionText, modifier.padding(10.dp), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            Text(actionText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+        }
+        Row(modifier.align(Alignment.CenterHorizontally).padding(3.dp)) {
+            ErrorTextBox(modifier, loginState.errorString)
         }
         Row {
             TextField(
                 modifier = modifier,
-                value = username,
-                onValueChange = { username = it },
+                value = loginState.username,
+                onValueChange = { model.setUsername(it)},
                 label = { Text("username") }
             )
         }
         Row {
             TextField(
                 modifier = modifier,
-                value = password,
-                onValueChange = { password = it },
+                value = loginState.password,
+                onValueChange = { model.setPassword(it) },
                 visualTransformation = PasswordVisualTransformation(),
                 label = { Text("password") }
             )
@@ -98,33 +100,54 @@ fun SignUpForm(modifier: Modifier = Modifier, visible: Boolean, setVisibility: (
             Row {
                 TextField(
                     modifier = modifier,
-                    value = firstName,
-                    onValueChange = { firstName = it },
+                    value = loginState.firstName,
+                    onValueChange = { model.setFirstName(it) },
                     label = { Text("first name") }
                 )
             }
             Row {
                 TextField(
                     modifier = modifier,
-                    value = lastName,
-                    onValueChange = { lastName = it },
+                    value = loginState.lastName,
+                    onValueChange = { model.setLastName(it) },
                     label = { Text("last name") }
                 )
             }
         }
         Spacer(modifier.padding(8.dp))
-        Button(onClick = {onClickAction()}, modifier
+        Button(onClick = {
+            if(visible) {
+                model.registerUser(repeatPassword)
+                repeatPassword = ""
+            } else {
+                model.login()
+            }
+        }, modifier
             .align(Alignment.CenterHorizontally),
             colors = ButtonColors(Turquoise, Color.White, Color.Gray, Color.Black)
         ) {
             Text(actionText)
         }
-        Button(onClick = {setVisibility()}, modifier
+        Button(onClick = { model.setSignUpVisibility(!visible) }, modifier
             .align(Alignment.CenterHorizontally)
             ,colors = ButtonColors(Color.White, Turquoise, Color.Gray, Color.Black)) {
             Text(showButtonText)
         }
         Spacer(modifier.padding(8.dp))
+    }
+}
+
+@Composable
+fun ErrorTextBox(modifier: Modifier = Modifier, text: String) {
+    if(text != "") {
+        Box(modifier
+            .border(1.dp, Color.Red)) {
+            Text(text,
+                modifier
+                    .padding(5.dp),
+                color = Color.Red
+            )
+        }
     }
 }
 

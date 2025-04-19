@@ -3,14 +3,12 @@ package com.example.restaurantreviewapp.dto
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.restaurantreviewapp.dao.AppDatabase
-import com.example.restaurantreviewapp.dao.User
 import com.example.restaurantreviewapp.services.RestaurantsDataService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.mindrot.jbcrypt.BCrypt
 import javax.inject.Inject
 
 data class AppState (
@@ -41,9 +39,55 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
         getRestaurantReviews(id)
     }
 
-    fun registerUser(user: User) {
-        user.password = BCrypt.hashpw(user.password, BCrypt.gensalt())
+    fun registerUser(repeatPassword: String) {
+        if (!validateSignUp(repeatPassword)) return
+        clearLoginInfo()
+    }
 
+    fun login() {
+        println(state.value.loginState.username)
+        println(state.value.loginState.password)
+        clearLoginInfo()
+    }
+
+    fun setUsername(username: String) {
+        _state.update {
+            it.copy(
+                loginState = it.loginState.copy(
+                    username = username
+                )
+            )
+        }
+    }
+
+    fun setPassword(password: String) {
+        _state.update {
+            it.copy(
+                loginState = it.loginState.copy(
+                    password = password
+                )
+            )
+        }
+    }
+
+    fun setFirstName(firstName: String) {
+        _state.update {
+            it.copy(
+                loginState = it.loginState.copy(
+                    firstName = firstName
+                )
+            )
+        }
+    }
+
+    fun setLastName(lastName: String) {
+        _state.update {
+            it.copy(
+                loginState = it.loginState.copy(
+                    lastName = lastName
+                )
+            )
+        }
     }
 
     fun setSignUpVisibility(visible: Boolean) {
@@ -57,14 +101,45 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                     )
                 }
             } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        loginState = it.loginState.copy(
-                            error = "Something went wrong"
-                        )
-                    )
-                }
+                println(e.toString())
+                addLoginError("Something went wrong")
             }
+        }
+        clearLoginInfo()
+    }
+
+    private fun validateSignUp(repeatPassword: String): Boolean {
+        var output = true
+        _state.value.loginState.apply {
+            errors.clear()
+            if (password != repeatPassword) addLoginError("Passwords did not match")
+            if (username == "") addLoginError("Please provide a username")
+            if (password == "") addLoginError("Please provide a password")
+            if (firstName == "") addLoginError("Please provide a first name")
+            if (lastName == "") addLoginError("Please provide a last name")
+
+            if (errors.size > 0) output = false
+        }
+        return output
+    }
+
+    private fun clearLoginInfo() {
+        setPassword("")
+        setUsername("")
+        setLastName("")
+        setFirstName("")
+        addLoginError(null)
+    }
+
+    private fun addLoginError(error: String?) {
+        if (error == null) _state.value.loginState.errors.clear()
+        else _state.value.loginState.errors.add(error)
+        _state.update {
+            it.copy(
+                loginState = it.loginState.copy(
+                    errorString = it.loginState.errors.joinToString("\n")
+                )
+            )
         }
     }
 
