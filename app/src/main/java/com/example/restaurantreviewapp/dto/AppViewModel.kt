@@ -16,13 +16,21 @@ import javax.inject.Inject
 data class AppState (
     val restaurantListState: RestaurantListState,
     val restaurantState: RestaurantState,
-    val userState: UserState
+    val userState: UserState,
+    val loginState: LoginState
 )
 
 @HiltViewModel
 class AppViewModel @Inject constructor(private val restaurantService: RestaurantsDataService,
                                        private val appDatabase: AppDatabase) : ViewModel() {
-    private val _state = MutableStateFlow(AppState(RestaurantListState(), RestaurantState(), UserState()))
+    private val _state = MutableStateFlow(
+        AppState(
+            RestaurantListState(),
+            RestaurantState(),
+            UserState(),
+            LoginState()
+        )
+    )
     val state = _state.asStateFlow()
 
     init {
