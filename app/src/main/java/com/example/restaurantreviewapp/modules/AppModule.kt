@@ -1,8 +1,6 @@
 package com.example.restaurantreviewapp.modules
 
-import android.app.Application
 import android.content.Context
-import com.example.restaurantreviewapp.ReviewApplication
 import com.example.restaurantreviewapp.dao.AppDatabase
 import com.example.restaurantreviewapp.services.RestaurantsDataApi
 import com.example.restaurantreviewapp.services.RestaurantsDataService
@@ -35,24 +33,6 @@ object AppModule {
     @Singleton
     fun provideApplicationContext(@ApplicationContext context: Context): Context {
         return context
-    }
-}
-
-@Module
-@InstallIn(ViewModelComponent::class)
-object RestaurantRepositoryModule {
-    @Provides
-    fun provideRestaurantsDataService(api: RestaurantsDataApi): RestaurantsDataService {
-        return RestaurantsDataServiceImplementation(api)
-    }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object AppDbModule {
-    @Provides
-    fun provideAppDatabase(context: Context): AppDatabase {
-        return AppDatabase.getAppDatabase(context)
     }
 }
 
