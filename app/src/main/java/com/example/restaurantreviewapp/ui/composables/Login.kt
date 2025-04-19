@@ -32,7 +32,6 @@ import com.example.restaurantreviewapp.ui.theme.Turquoise
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier, navController: NavController, model: AppViewModel) {
-    val state = model.state.collectAsState().value.loginState
     RestaurantReviewAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
             Column(modifier = Modifier

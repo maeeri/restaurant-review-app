@@ -1,7 +1,5 @@
 package com.example.restaurantreviewapp.dto
 
-import com.example.restaurantreviewapp.dao.User
-
 data class LoginState(
     val loading: Boolean = false,
     val errors: MutableList<String> = mutableListOf(),

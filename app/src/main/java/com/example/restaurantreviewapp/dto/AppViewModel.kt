@@ -2,13 +2,15 @@ package com.example.restaurantreviewapp.dto
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.restaurantreviewapp.dao.AppDatabase
+import com.example.restaurantreviewapp.dao.User
+import com.example.restaurantreviewapp.repos.AppRepository
 import com.example.restaurantreviewapp.services.RestaurantsDataService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.mindrot.jbcrypt.BCrypt
 import javax.inject.Inject
 
 data class AppState (
@@ -20,7 +22,7 @@ data class AppState (
 
 @HiltViewModel
 class AppViewModel @Inject constructor(private val restaurantService: RestaurantsDataService,
-                                       private val appDatabase: AppDatabase) : ViewModel() {
+                                       private val appRepository: AppRepository) : ViewModel() {
     private val _state = MutableStateFlow(
         AppState(
             RestaurantListState(),
@@ -41,7 +43,29 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
 
     fun registerUser(repeatPassword: String) {
         if (!validateSignUp(repeatPassword)) return
-        clearLoginInfo()
+
+        viewModelScope.launch {
+            _state.value.loginState.apply {
+                try {
+                    val passwordHash = BCrypt.hashpw(password, BCrypt.gensalt())
+                    val user = User(
+                        username = username,
+                        firstName = firstName,
+                        lastName = lastName,
+                        password = passwordHash,
+                        loggedIn = true
+                    )
+                    appRepository.insertUser(user)
+                    var userFromDb = appRepository.getUser(username)
+                    println(userFromDb)
+                    clearLoginInfo()
+                } catch (e: Exception) {
+                    addLoginError("Something went wrong")
+                } finally {
+
+                }
+            }
+        }
     }
 
     fun login() {
@@ -128,7 +152,7 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
         setUsername("")
         setLastName("")
         setFirstName("")
-        addLoginError(null)
+        _state.value.loginState.errors.clear()
     }
 
     private fun addLoginError(error: String?) {

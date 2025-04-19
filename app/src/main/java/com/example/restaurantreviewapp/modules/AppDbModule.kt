@@ -2,6 +2,7 @@ package com.example.restaurantreviewapp.modules
 
 import android.content.Context
 import com.example.restaurantreviewapp.dao.AppDatabase
+import com.example.restaurantreviewapp.repos.AppRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,5 +15,10 @@ object AppDbModule {
     @Provides
     fun provideAppDatabase(context: Context): AppDatabase {
         return AppDatabase.getAppDatabase(context)
+    }
+
+    @Provides
+    fun provideAppRepository(context: Context, appDatabase: AppDatabase): AppRepository {
+        return AppRepository(appDatabase.userDao(), appDatabase.reviewDao())
     }
 }

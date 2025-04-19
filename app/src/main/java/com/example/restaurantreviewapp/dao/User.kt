@@ -17,7 +17,7 @@ data class User(
     @ColumnInfo("last_name")
     val lastName: String,
     @ColumnInfo("username")
-    val username: String,
+    var username: String,
     @ColumnInfo("password")
     var password: String,
     @ColumnInfo("logged_in")
