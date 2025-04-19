@@ -51,14 +51,14 @@ fun CustomIcon(
         Icon(
             rememberVectorPainter(imageVector),
             contentDescription = null,
-            modifier = Modifier
+            modifier = modifier
                 .offset(x = xShadowOffset, y = yShadowOffset)
                 .blur(blurRadius),
             tint = backGroundColor,
         )
         Icon(
             rememberVectorPainter(imageVector),
-            modifier = Modifier,
+            modifier = modifier,
             contentDescription = null,
             tint = iconTintColor
         )
@@ -84,7 +84,7 @@ fun StarRating(modifier: Modifier = Modifier, rating: Float) {
 }
 
 @Composable
-fun ListItem(modifier: Modifier = Modifier, child: @Composable() (modifier: Modifier) -> Unit) {
+fun CustomCard(modifier: Modifier = Modifier, child: @Composable() (modifier: Modifier) -> Unit) {
     Card(modifier = modifier
         .padding(7.dp)
         .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray)

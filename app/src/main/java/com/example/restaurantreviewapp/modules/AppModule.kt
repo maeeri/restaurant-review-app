@@ -1,14 +1,10 @@
 package com.example.restaurantreviewapp.modules
 
 import android.content.Context
-import com.example.restaurantreviewapp.dao.AppDatabase
 import com.example.restaurantreviewapp.services.RestaurantsDataApi
-import com.example.restaurantreviewapp.services.RestaurantsDataService
-import com.example.restaurantreviewapp.services.RestaurantsDataServiceImplementation
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit

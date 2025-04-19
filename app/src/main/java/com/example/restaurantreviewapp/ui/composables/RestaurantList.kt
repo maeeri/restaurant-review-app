@@ -38,9 +38,9 @@ import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
     if (model.state.collectAsState().value.restaurantListState.loading) return
     val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantListState.restaurantList
-    LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+    LazyColumn(modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         items(restaurants.size) {
-            i -> ListItem(modifier = Modifier
+            i -> CustomCard(modifier = Modifier
                 .padding(8.dp)
                 .clickable {
                     onRestaurantClick(restaurants[i], model, navController)
@@ -125,8 +125,8 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
 @Composable
 fun RestaurantListPage(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
     RestaurantReviewAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+            Column(modifier = modifier.fillMaxSize().padding(innerPadding)) {
                 Row {
                     AppBar(
                         text = "Restaurants",

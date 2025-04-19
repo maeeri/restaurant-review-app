@@ -46,6 +46,28 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
 
     }
 
+    fun setSignUpVisibility(visible: Boolean) {
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        loginState = it.loginState.copy(
+                            signUpVisible = visible
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        loginState = it.loginState.copy(
+                            error = "Something went wrong"
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     private fun getRestaurants() {
         viewModelScope.launch {
             try {
@@ -127,6 +149,4 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             }
         }
     }
-
-
 }

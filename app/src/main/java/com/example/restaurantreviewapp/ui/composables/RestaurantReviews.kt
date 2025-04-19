@@ -29,10 +29,10 @@ import java.time.format.DateTimeFormatter
 fun ReviewList(modifier: Modifier = Modifier, model: AppViewModel) {
     if (model.state.collectAsState().value.restaurantState.loading) return
     val reviews = model.state.collectAsState().value.restaurantState.ratings
-    Row {
+    Row(modifier) {
         LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
             items(reviews.size) {
-                i -> ListItem(modifier = Modifier
+                i -> CustomCard(modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
                         child = { ReviewItem(review = reviews[i]) })
@@ -74,7 +74,7 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto) {
 fun RestaurantReviews(modifier: Modifier = Modifier, model: AppViewModel) {
     Column {
         Row {
-            ListItem(child = { model.state.collectAsState().value.restaurantState.restaurant?.let { RestaurantItem(restaurant = it) } })
+            CustomCard(child = { model.state.collectAsState().value.restaurantState.restaurant?.let { RestaurantItem(restaurant = it) } })
         }
         Row {
             ReviewList(modifier, model)
@@ -86,8 +86,8 @@ fun RestaurantReviews(modifier: Modifier = Modifier, model: AppViewModel) {
 @Composable
 fun RestaurantPage(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
     RestaurantReviewAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+            Column(modifier = modifier.fillMaxSize().padding(innerPadding)) {
                 Row {
                     AppBar(
                         text = "Reviews",
