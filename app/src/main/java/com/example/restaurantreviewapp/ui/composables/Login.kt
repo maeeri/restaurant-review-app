@@ -26,12 +26,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.restaurantreviewapp.dto.AppViewModel
+import com.example.restaurantreviewapp.vms.LoginViewModel
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier, navController: NavController, model: AppViewModel) {
+fun LoginPage(modifier: Modifier = Modifier,
+              model: LoginViewModel,
+              topBar: @Composable() (modifier: Modifier) -> Unit
+) {
     RestaurantReviewAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
             Column(modifier = Modifier
@@ -39,10 +42,7 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, model
                 .padding(paddingValues),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 Row {
-                    AppBar(
-                        text = "Login",
-                        navController = navController
-                    )
+                    topBar(modifier)
                 }
 
                 CustomCard(modifier) {
@@ -54,9 +54,9 @@ fun LoginPage(modifier: Modifier = Modifier, navController: NavController, model
 }
 
 @Composable
-fun SignUpForm(modifier: Modifier = Modifier, model: AppViewModel) {
+fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel) {
     var repeatPassword by remember { mutableStateOf("") }
-    val loginState = model.state.collectAsState().value.loginState
+    val loginState = model.state.collectAsState().value
     val visible = loginState.signUpVisible
 
     val actionText: String = if (visible) "SIGN UP" else "SIGN IN"

@@ -84,7 +84,8 @@ fun StarRating(modifier: Modifier = Modifier, rating: Float) {
 }
 
 @Composable
-fun CustomCard(modifier: Modifier = Modifier, child: @Composable() (modifier: Modifier) -> Unit) {
+fun CustomCard(modifier: Modifier = Modifier,
+               child: @Composable() (modifier: Modifier) -> Unit) {
     Card(modifier = modifier
         .padding(7.dp)
         .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray)
@@ -97,10 +98,13 @@ fun CustomCard(modifier: Modifier = Modifier, child: @Composable() (modifier: Mo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(modifier: Modifier = Modifier, text: String, navController: NavController) {
+fun AppBar(modifier: Modifier = Modifier,
+           text: String,
+           navController: NavController,
+           onMenuOpen: () -> Unit) {
     TopAppBar({ Text(text)}, modifier.clickable { navController.navigate("RestaurantListPage") },
         navigationIcon = {
-        IconButton(onClick = { /* do something */ }) {
+        IconButton(onClick = { onMenuOpen() }) {
             Icon(
                 imageVector = Icons.Filled.Menu,
                 contentDescription = "menu"

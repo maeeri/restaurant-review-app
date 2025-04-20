@@ -18,7 +18,7 @@ object AppDbModule {
     }
 
     @Provides
-    fun provideAppRepository(context: Context, appDatabase: AppDatabase): AppRepository {
+    fun provideAppRepository(appDatabase: AppDatabase): AppRepository {
         return AppRepository(appDatabase.userDao(), appDatabase.reviewDao())
     }
 }

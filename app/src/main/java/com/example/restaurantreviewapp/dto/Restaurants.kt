@@ -19,6 +19,12 @@ data class RatingDto (
     val date_rated: String?
 )
 
+data class AppState (
+    val restaurantListState: RestaurantListState,
+    val restaurantState: RestaurantState,
+    val userState: UserState
+)
+
 data class RestaurantListState (
     val loading: Boolean = false,
     val restaurantList: List<RestaurantDto> = listOf(),
