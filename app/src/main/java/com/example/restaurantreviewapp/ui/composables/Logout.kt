@@ -18,14 +18,10 @@ import com.example.restaurantreviewapp.vms.AppViewModel
 
 @Composable
 fun LogoutPage(modifier: Modifier = Modifier, model: AppViewModel, topBar: @Composable () -> Unit) {
+    if (model.state.collectAsState().value.loading) return
     val userState = model.state.collectAsState().value.userState
-    if (userState.loading) return
-
     val user = userState.user
     if (user != null) {
-        println(user.username)
-        println(user.firstName)
-        println(user.lastName)
         model.logout()
     }
     RestaurantReviewAppTheme {

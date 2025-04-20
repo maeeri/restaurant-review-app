@@ -111,14 +111,6 @@ fun AddReviewModal(modifier: Modifier = Modifier,
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun ReviewPreview() {
-//    RestaurantReviewAppTheme {
-//        AddReviewModal(Modifier, { println("hi")}, true, 1, 1)
-//    }
-//}
-
 fun addReview(restaurantId: Int, userId: Int, rating: Float, comment: String, model: AppViewModel) {
     model.addReview(restaurantId, userId, rating, comment)
 }

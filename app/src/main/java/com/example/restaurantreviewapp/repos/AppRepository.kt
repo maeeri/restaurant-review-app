@@ -10,7 +10,7 @@ class AppRepository(private val userDao: UserDao, private val reviewDao: ReviewD
     suspend fun getPasswordHash(username: String) = userDao.getPasswordHash(username)
     suspend fun getLoggedInUser() = userDao.getLoggedInUser()
     suspend fun logUserIn(username: String) = userDao.logUserIn(username)
-    suspend fun getUserReviews(userId: Int) = reviewDao.getUserReviews(userId)
+    suspend fun getUserReviews(userId: Int): List<Int> = reviewDao.getUserReviews(userId)
 
     suspend fun insertUser(user: User) = userDao.insert(user)
     suspend fun insertReview(review: Review) = reviewDao.insert(review)

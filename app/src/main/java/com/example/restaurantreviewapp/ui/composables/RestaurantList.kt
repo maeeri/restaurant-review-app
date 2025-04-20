@@ -36,18 +36,18 @@ import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 
 @Composable
 fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
-    if (model.state.collectAsState().value.restaurantListState.loading) return
+    if (model.state.collectAsState().value.loading) return
     val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantListState.restaurantList
     LazyColumn(modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         items(restaurants.size) {
             i -> CustomCard(modifier = Modifier
-                .padding(8.dp)
-                .clickable {
-                    onRestaurantClick(restaurants[i], model, navController)
-                },
-                child = {
-                    RestaurantItem(restaurant = restaurants[i])
-                    }
+            .padding(8.dp)
+            .clickable {
+                onRestaurantClick(restaurants[i], model, navController)
+            },
+            child = {
+                RestaurantItem(restaurant = restaurants[i])
+                }
             )
         }
     }
@@ -129,13 +129,14 @@ fun RestaurantListPage(modifier: Modifier = Modifier,
                        topBar: @Composable() (modifier: Modifier) -> Unit,
                        username: String? = null)
 {
-    if (username != null) {
-        if (model.state.collectAsState().value.userState.loading) return
+    if (username != null && username != "{username}" && !model.state.collectAsState().value.loading) {
         model.loadUser(username)
     }
     RestaurantReviewAppTheme {
         Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
-            Column(modifier = modifier.fillMaxSize().padding(innerPadding)) {
+            Column(modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)) {
                 Row {
                     topBar(modifier)
                 }

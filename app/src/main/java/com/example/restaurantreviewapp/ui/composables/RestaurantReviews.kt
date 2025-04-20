@@ -1,6 +1,7 @@
 package com.example.restaurantreviewapp.ui.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -23,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.restaurantreviewapp.dto.RatingDto
@@ -34,22 +37,28 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun ReviewList(modifier: Modifier = Modifier, model: AppViewModel) {
-    if (model.state.collectAsState().value.restaurantState.loading) return
-    val reviews = model.state.collectAsState().value.restaurantState.ratings
+    val state = model.state.collectAsState().value
+    if (state.loading) return
+    val reviews = state.restaurantState.ratings
+    val ownReviews = state.userState.reviews
+
     Row(modifier) {
         LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
             items(reviews.size) {
                 i -> CustomCard(modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-                        child = { ReviewItem(review = reviews[i]) })
+                        child = {
+                            ReviewItem(review = reviews[i], isOwnReview = ownReviews.contains(reviews[i].id))
+                        }
+                )
             }
         }
     }
 }
 
 @Composable
-fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto) {
+fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto, isOwnReview: Boolean) {
     var reviewTimeString = ""
     if (review.date_rated != null) {
         try {
@@ -68,9 +77,20 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto) {
         .fillMaxWidth()
         .background(CardBackground)
         .padding(8.dp)) {
-        Row {
+        Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
                 StarRating(rating = review.value)
+            }
+            Column {
+                if (isOwnReview) {
+                    CustomIcon(
+                        modifier.clickable {
+                            println("Boop ".plus(review.id))
+                        },
+                        Icons.Default.Delete,
+                        iconTintColor = Color.Red
+                    )
+                }
             }
         }
         Spacer(modifier.padding(8.dp))
@@ -92,14 +112,13 @@ fun RestaurantReviews(modifier: Modifier = Modifier, model: AppViewModel) {
     }
 }
 
-
 @Composable
 fun RestaurantPage(modifier: Modifier = Modifier,
                    model: AppViewModel,
                    topBar: @Composable() (modifier: Modifier) -> Unit) {
     var showAddReview by remember { mutableStateOf(false) }
     val state = model.state.collectAsState().value
-    if (state.restaurantState.loading) return
+    if (state.loading) return
 
     val userIsNotNull = state.userState.user != null
     val restaurantId = state.restaurantState.restaurant?.id

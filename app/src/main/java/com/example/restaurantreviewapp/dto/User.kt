@@ -8,7 +8,8 @@ data class UserDto(
 )
 
 data class UserState (
-    val loading: Boolean = false,
+//    val loading: Boolean = false,
     val user: UserDto? = null,
-    val error: String? = null
+//    val error: String? = null,
+    val reviews: List<Int> = listOf()
 )

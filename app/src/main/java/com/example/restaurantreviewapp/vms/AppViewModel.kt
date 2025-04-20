@@ -44,22 +44,24 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             try {
                 _state.update {
                     it.copy(
-                        restaurantState = it.restaurantState.copy(
-                            loading = true
-                        )
+                        loading = true,
+                        error = null
                     )
                 }
                 val review = restaurantService.postRestaurantRating(restaurantId, rating, comment)
                 appRepository.insertReview(Review(reviewId = review.id, userId = userId))
+                getUserReviews(userId)
                 loadRestaurant(restaurantId)
             } catch (e: Exception) {
-                println(e.toString())
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
             } finally {
                 _state.update {
                     it.copy(
-                        restaurantState = it.restaurantState.copy(
-                            loading = false
-                        )
+                        loading = false
                     )
                 }
             }
@@ -72,9 +74,8 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             try {
                 _state.update {
                     it.copy(
-                        userState = it.userState.copy(
-                            loading = true
-                        )
+                        loading = true,
+                        error = null
                     )
                 }
                 _state.value.userState.user?.apply {
@@ -90,13 +91,15 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                     )
                 }
             } catch (e: Exception) {
-                println(e.toString())
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
             } finally {
                 _state.update {
                     it.copy(
-                        userState = it.userState.copy(
-                            loading = false
-                        )
+                        loading = false
                     )
                 }
             }
@@ -104,6 +107,7 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
     }
 
     fun loadUser(username: String) {
+        println(username)
         if (_state.value.userState.user != null) {
             return
         }
@@ -111,9 +115,8 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             try {
                 _state.update {
                     it.copy(
-                        userState = it.userState.copy(
-                            loading = true
-                        )
+                        loading = true,
+                        error = null
                     )
                 }
                 val user = appRepository.getUser(username)
@@ -126,19 +129,55 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                         )
                     )
                 }
+                getUserReviews(user.id)
             }
             catch (e: IllegalStateException) {
                 println(username)
                 return@launch
             }
             catch (e: Exception) {
-                println(e.toString())
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
             } finally {
                 _state.update {
                     it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getUserReviews(userId: Int) {
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        loading = true,
+                        error = null
+                    )
+                }
+                val reviewIds = appRepository.getUserReviews(userId)
+                _state.update {
+                    it.copy(
                         userState = it.userState.copy(
-                            loading = false
+                            reviews = reviewIds
                         )
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
+            } finally {
+                _state.update {
+                    it.copy(
+                        loading = false
                     )
                 }
             }
@@ -150,21 +189,22 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             try {
                 _state.update {
                     it.copy(
-                        userState = it.userState.copy(
-                            loading = true
-                        )
+                        loading = true,
+                        error = null
                     )
                 }
                 val username = appRepository.getLoggedInUser()
                 loadUser(username)
             } catch (e: Exception) {
-                println(e.toString())
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
             } finally {
                 _state.update {
                     it.copy(
-                        userState = it.userState.copy(
-                            loading = false
-                        )
+                        loading = false
                     )
                 }
             }
@@ -176,9 +216,8 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             try {
                 _state.update {
                     it.copy(
-                        restaurantListState = it.restaurantListState.copy(
-                            error = null, loading = true
-                        )
+                        error = null,
+                        loading = true
                     )
                 }
                 val restaurants = restaurantService.getRestaurants()
@@ -193,18 +232,14 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             catch (e: Exception) {
                 _state.update {
                     it.copy(
-                        restaurantListState = it.restaurantListState.copy(
-                            error = e.toString()
-                        )
+                        error = e.toString()
                     )
                 }
             }
             finally {
                 _state.update {
                     it.copy(
-                        restaurantListState = it.restaurantListState.copy(
-                            loading = false
-                        )
+                        loading = false
                     )
                 }
             }
@@ -216,9 +251,8 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             try {
                 _state.update {
                     it.copy(
-                        restaurantState = it.restaurantState.copy(
-                            error = null, loading = true
-                        )
+                        error = null,
+                        loading = true
                     )
                 }
                 val restaurant = restaurantService.getRestaurant(id)
@@ -235,18 +269,14 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             catch (e: Exception) {
                 _state.update {
                     it.copy(
-                        restaurantState = it.restaurantState.copy(
-                            error = e.toString()
-                        )
+                        error = e.toString()
                     )
                 }
             }
             finally {
                 _state.update {
                     it.copy(
-                        restaurantState = it.restaurantState.copy(
-                            loading = false
-                        )
+                        loading = false
                     )
                 }
             }

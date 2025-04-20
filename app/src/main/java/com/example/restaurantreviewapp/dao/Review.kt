@@ -33,6 +33,6 @@ interface ReviewDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(review: Review)
 
-    @Query("SELECT * FROM reviews WHERE user_id=:userId")
-    suspend fun getUserReviews(userId: Int): List<Review>
+    @Query("SELECT review_id FROM reviews WHERE user_id=:userId")
+    suspend fun getUserReviews(userId: Int): List<Int>
 }
