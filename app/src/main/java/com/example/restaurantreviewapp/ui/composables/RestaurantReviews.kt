@@ -18,14 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.restaurantreviewapp.dto.RatingDto
-import com.example.restaurantreviewapp.vms.RestaurantsViewModel
+import com.example.restaurantreviewapp.vms.AppViewModel
 import com.example.restaurantreviewapp.ui.theme.CardBackground
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun ReviewList(modifier: Modifier = Modifier, model: RestaurantsViewModel) {
+fun ReviewList(modifier: Modifier = Modifier, model: AppViewModel) {
     if (model.state.collectAsState().value.restaurantState.loading) return
     val reviews = model.state.collectAsState().value.restaurantState.ratings
     Row(modifier) {
@@ -70,7 +70,7 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto) {
 }
 
 @Composable
-fun RestaurantReviews(modifier: Modifier = Modifier, model: RestaurantsViewModel) {
+fun RestaurantReviews(modifier: Modifier = Modifier, model: AppViewModel) {
     Column {
         Row {
             CustomCard(child = { model.state.collectAsState().value.restaurantState.restaurant?.let { RestaurantItem(restaurant = it) } })
@@ -84,7 +84,7 @@ fun RestaurantReviews(modifier: Modifier = Modifier, model: RestaurantsViewModel
 
 @Composable
 fun RestaurantPage(modifier: Modifier = Modifier,
-                   model: RestaurantsViewModel,
+                   model: AppViewModel,
                    topBar: @Composable() (modifier: Modifier) -> Unit) {
     RestaurantReviewAppTheme {
         Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->

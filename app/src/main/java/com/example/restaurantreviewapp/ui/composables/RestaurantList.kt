@@ -28,14 +28,14 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.example.restaurantreviewapp.dto.RestaurantDto
-import com.example.restaurantreviewapp.vms.RestaurantsViewModel
+import com.example.restaurantreviewapp.vms.AppViewModel
 import com.example.restaurantreviewapp.ui.theme.CardBackground
 import com.example.restaurantreviewapp.ui.theme.DarkGreen
 import com.example.restaurantreviewapp.ui.theme.Orange
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 
 @Composable
-fun RestaurantList(modifier: Modifier = Modifier, model: RestaurantsViewModel, navController: NavController) {
+fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
     if (model.state.collectAsState().value.restaurantListState.loading) return
     val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantListState.restaurantList
     LazyColumn(modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -124,10 +124,14 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
 
 @Composable
 fun RestaurantListPage(modifier: Modifier = Modifier,
-                       model: RestaurantsViewModel,
+                       model: AppViewModel,
                        navController: NavController,
-                       topBar: @Composable() (modifier: Modifier) -> Unit)
+                       topBar: @Composable() (modifier: Modifier) -> Unit,
+                       username: String? = null)
 {
+    if (username != null) {
+        model.loadUser(username)
+    }
     RestaurantReviewAppTheme {
         Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = modifier.fillMaxSize().padding(innerPadding)) {
@@ -142,7 +146,7 @@ fun RestaurantListPage(modifier: Modifier = Modifier,
     }
 }
 
-fun onRestaurantClick(restaurant: RestaurantDto, model: RestaurantsViewModel, navController: NavController) {
+fun onRestaurantClick(restaurant: RestaurantDto, model: AppViewModel, navController: NavController) {
     model.loadRestaurant(restaurant.id)
     navController.navigate("RestaurantPage")
 }

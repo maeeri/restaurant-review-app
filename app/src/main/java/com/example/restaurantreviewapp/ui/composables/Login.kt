@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.restaurantreviewapp.vms.LoginViewModel
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
@@ -34,7 +35,8 @@ import com.example.restaurantreviewapp.ui.theme.Turquoise
 @Composable
 fun LoginPage(modifier: Modifier = Modifier,
               model: LoginViewModel,
-              topBar: @Composable (modifier: Modifier) -> Unit
+              topBar: @Composable (modifier: Modifier) -> Unit,
+              navController: NavController
 ) {
     RestaurantReviewAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
@@ -47,7 +49,7 @@ fun LoginPage(modifier: Modifier = Modifier,
                 }
 
                 CustomCard(modifier) {
-                    SignUpForm(modifier, model)
+                    SignUpForm(modifier, model, navController)
                 }
             }
         }
@@ -55,9 +57,13 @@ fun LoginPage(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel) {
+fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel, navController: NavController) {
     var repeatPassword by remember { mutableStateOf("") }
     val loginState = model.state.collectAsState().value
+
+    if (loginState.success) {
+        navController.navigate("RestaurantListPage/{username}")
+    }
     val visible = loginState.signUpVisible
 
     val actionText: String = if (visible) "SIGN UP" else "SIGN IN"

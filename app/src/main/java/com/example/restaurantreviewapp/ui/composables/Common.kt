@@ -4,10 +4,10 @@ import StarEmpty
 import StarFull
 import StarHalf
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.restaurantreviewapp.ui.theme.CardBackground
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 
@@ -100,14 +99,15 @@ fun CustomCard(modifier: Modifier = Modifier,
 @Composable
 fun AppBar(modifier: Modifier = Modifier,
            text: String,
-           navController: NavController,
            onMenuClick: () -> Unit) {
-    TopAppBar({ Text(text)}, modifier.clickable { navController.navigate("RestaurantListPage") },
+    TopAppBar({ Text(text)},
+        modifier,
         navigationIcon = {
         IconButton(onClick = { onMenuClick() }) {
             Icon(
                 imageVector = Icons.Filled.Menu,
-                contentDescription = "menu"
+                contentDescription = "menu",
+                Modifier.defaultMinSize(30.dp, 30.dp)
             )
         }
     },

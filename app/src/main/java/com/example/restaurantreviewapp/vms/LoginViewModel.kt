@@ -19,9 +19,13 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
     private val _state  = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
 
-    fun registerUser(repeatPassword: String): Boolean {
-        var output = false
-        if (!validateSignUp(repeatPassword)) return output
+    fun registerUser(repeatPassword: String) {
+        _state.update {
+            it.copy(
+                success = false
+            )
+        }
+        if (!validateSignUp(repeatPassword)) return
 
         viewModelScope.launch {
             try {
@@ -42,7 +46,11 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                     appRepository.insertUser(user)
                     val userFromDb = appRepository.getUser(username)
                     if (userFromDb.username == username) {
-                        output = true
+                        _state.update {
+                            it.copy(
+                                success = true
+                            )
+                        }
                         clearLoginInfo()
                     } else {
                         addLoginError("User not created. Something went wrong.")
@@ -62,12 +70,15 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                 }
             }
         }
-        return output
     }
 
-    fun login(): Boolean {
-        var output = false
-        if(!validateSignIn()) return output
+    fun login() {
+        _state.update {
+            it.copy(
+                success = false
+            )
+        }
+        if(!validateSignIn()) return
 
         viewModelScope.launch {
             try {
@@ -87,7 +98,11 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                     }
                 }
                 clearLoginInfo()
-                output = true
+                _state.update {
+                    it.copy(
+                        success = true
+                    )
+                }
             }
             catch (e: IllegalStateException) {
                 println(e.toString())
@@ -104,7 +119,6 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                 }
             }
         }
-        return output
     }
 
     fun setUsername(username: String) {

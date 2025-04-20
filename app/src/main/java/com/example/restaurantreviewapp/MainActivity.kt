@@ -7,20 +7,26 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -34,8 +40,9 @@ import androidx.navigation.navigation
 import com.example.restaurantreviewapp.containers.AppContainer
 import com.example.restaurantreviewapp.ui.composables.AppBar
 import com.example.restaurantreviewapp.vms.LoginViewModel
-import com.example.restaurantreviewapp.vms.RestaurantsViewModel
+import com.example.restaurantreviewapp.vms.AppViewModel
 import com.example.restaurantreviewapp.ui.composables.LoginPage
+import com.example.restaurantreviewapp.ui.composables.LogoutPage
 import com.example.restaurantreviewapp.ui.composables.RestaurantListPage
 import com.example.restaurantreviewapp.ui.composables.RestaurantPage
 import dagger.BindsInstance
@@ -54,6 +61,7 @@ class MainActivity : ComponentActivity() {
             val drawerState = rememberDrawerState(DrawerValue.Closed)
             val scope = rememberCoroutineScope()
             val navController = rememberNavController()
+
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet {
@@ -89,6 +97,26 @@ class MainActivity : ComponentActivity() {
                             },
                             selected = true
                         )
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
+                        NavigationDrawerItem(
+                            label = {
+                                Text("Sign out", modifier = Modifier.align(Alignment.End))
+                            },
+                            icon = {
+                                Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Sign out")
+                            },
+                            onClick = {
+                                navController.navigate("LogoutPage")
+                                scope.launch {
+                                    drawerState.close()
+                                }
+                            },
+                            selected = true,
+                            colors = NavigationDrawerItemDefaults.colors(
+                                selectedContainerColor = Color.White,
+                                unselectedIconColor = Color.Gray
+                            )
+                        )
                     }
                 },
                 drawerState = drawerState
@@ -120,24 +148,34 @@ fun AppNavHost(
         startDestination = startDestination) {
         navigation(startDestination = "RestaurantListPage", route = "restaurantfeature") {
             composable("RestaurantListPage") {
-                val model = it.SharedViewModel<RestaurantsViewModel>(navController)
+                val model = it.SharedViewModel<AppViewModel>(navController)
                 RestaurantListPage(
                     model = model,
                     navController = navController,
                     topBar = { AppBar(modifier,
                         "Restaurant list",
-                        navController = navController,
                         onMenuClick) }
+                )
+            }
+            composable("RestaurantListPage/{username}") {
+                val model = it.SharedViewModel<AppViewModel>(navController)
+                val username = it.arguments?.getString("username")
+                RestaurantListPage(
+                    model = model,
+                    navController = navController,
+                    topBar = { AppBar(modifier,
+                        "Restaurant list",
+                        onMenuClick)},
+                    username = username
                 )
             }
 
             composable("RestaurantPage") {
-                val model = it.SharedViewModel<RestaurantsViewModel>(navController)
+                val model = it.SharedViewModel<AppViewModel>(navController)
                 RestaurantPage(
                     model = model,
                     topBar = { AppBar(modifier,
                         "Restaurant reviews",
-                        navController = navController,
                         onMenuClick) }
                 )
             }
@@ -149,7 +187,17 @@ fun AppNavHost(
                     model = model,
                     topBar = { AppBar(modifier,
                         "Sign in",
-                        navController = navController,
+                        onMenuClick)
+                    },
+                    navController = navController
+                )
+            }
+            composable("LogoutPage") {
+                val model = it.SharedViewModel<AppViewModel>(navController)
+                LogoutPage(
+                    model = model,
+                    topBar = { AppBar(modifier,
+                        "Signed out",
                         onMenuClick) }
                 )
             }
