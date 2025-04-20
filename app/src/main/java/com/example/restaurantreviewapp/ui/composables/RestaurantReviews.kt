@@ -64,7 +64,10 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto) {
             reviewTimeString = ""
         }
     }
-    Column(modifier.fillMaxWidth().background(CardBackground).padding(8.dp)) {
+    Column(modifier
+        .fillMaxWidth()
+        .background(CardBackground)
+        .padding(8.dp)) {
         Row {
             Column {
                 StarRating(rating = review.value)
@@ -95,18 +98,29 @@ fun RestaurantPage(modifier: Modifier = Modifier,
                    model: AppViewModel,
                    topBar: @Composable() (modifier: Modifier) -> Unit) {
     var showAddReview by remember { mutableStateOf(false) }
+    val state = model.state.collectAsState().value
+    if (state.restaurantState.loading) return
+
+    val userIsNotNull = state.userState.user != null
+    val restaurantId = state.restaurantState.restaurant?.id
+    val userId = state.userState.user?.id
+
     RestaurantReviewAppTheme {
         Scaffold(modifier = modifier.fillMaxSize(),
             floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    text = { Text("Add review") },
-                    icon = { Icon(Icons.Filled.Add, contentDescription = "")},
-                    onClick = {
-                        showAddReview = true
-                    }
-                )
+                if (userIsNotNull) {
+                    ExtendedFloatingActionButton(
+                        text = { Text("Add review") },
+                        icon = { Icon(Icons.Filled.Add, contentDescription = "") },
+                        onClick = {
+                            showAddReview = true
+                        }
+                    )
+                }
             }) { innerPadding ->
-            Column(modifier = modifier.fillMaxSize().padding(innerPadding)) {
+            Column(modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)) {
                 Row {
                     topBar(modifier)
                 }
@@ -114,7 +128,17 @@ fun RestaurantPage(modifier: Modifier = Modifier,
                     RestaurantReviews(model = model)
                 }
             }
-            AddReviewModal(modifier, { showAddReview = false}, showAddReview)
+            if(restaurantId != null && userId != null) {
+                AddReviewModal(
+                    modifier,
+                    { showAddReview = false },
+                    showAddReview,
+                    restaurantId,
+                    userId,
+                    model
+                )
+            }
         }
     }
 }
+

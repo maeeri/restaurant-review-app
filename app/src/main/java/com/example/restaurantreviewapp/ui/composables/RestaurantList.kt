@@ -130,6 +130,7 @@ fun RestaurantListPage(modifier: Modifier = Modifier,
                        username: String? = null)
 {
     if (username != null) {
+        if (model.state.collectAsState().value.userState.loading) return
         model.loadUser(username)
     }
     RestaurantReviewAppTheme {

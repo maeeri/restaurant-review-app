@@ -20,18 +20,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.restaurantreviewapp.ui.theme.DarkGreen
-import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
+import com.example.restaurantreviewapp.vms.AppViewModel
 import java.math.RoundingMode
 
 @Composable
-fun AddReviewForm(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) {
-    var description by remember { mutableStateOf("") }
-    var review by remember { mutableFloatStateOf(0f) }
+fun AddReviewForm(modifier: Modifier = Modifier,
+                  onDismissRequest: () -> Unit,
+                  restaurantId: Int,
+                  userId: Int,
+                  model: AppViewModel) {
+    var comment by remember { mutableStateOf("") }
+    var rating by remember { mutableFloatStateOf(0f) }
     CustomCard {
         Column(modifier.padding(30.dp)) {
             Row {
@@ -39,8 +42,8 @@ fun AddReviewForm(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) {
             }
             Row {
                 Slider(
-                    value = review,
-                    onValueChange = { review = it },
+                    value = rating,
+                    onValueChange = { rating = it },
                     steps = 9,
                     valueRange = 0f..5f,
                     colors = SliderDefaults.colors(
@@ -53,13 +56,13 @@ fun AddReviewForm(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) {
                 )
             }
             Row {
-                Text(review.toBigDecimal().setScale(1, RoundingMode.UP).toDouble().toString())
+                Text(rating.toBigDecimal().setScale(1, RoundingMode.UP).toFloat().toString())
             }
             Row {
                 TextField(
                     modifier = modifier,
-                    value = description,
-                    onValueChange = { description = it },
+                    value = comment,
+                    onValueChange = { comment = it },
                     label = { Text("Your review") },
                     maxLines = 10
                 )
@@ -68,8 +71,14 @@ fun AddReviewForm(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) {
                 Column {
                     Button(
                         onClick = {
-                            println(description)
-                            println(review.toBigDecimal().setScale(1, RoundingMode.UP).toDouble().toString())
+                            addReview(restaurantId,
+                                userId,
+                                rating = rating.toBigDecimal().setScale(1, RoundingMode.UP).toFloat(),
+                                comment,
+                                model)
+                            rating = 0f
+                            comment = ""
+                            onDismissRequest()
                         },
                         colors = ButtonColors(Turquoise, Color.White, Color.Gray, Color.Black)
                     ) { Text("Submit")}
@@ -88,21 +97,28 @@ fun AddReviewForm(modifier: Modifier = Modifier, onDismissRequest: () -> Unit) {
 @Composable
 fun AddReviewModal(modifier: Modifier = Modifier,
                    onDismissRequest: () -> Unit,
-                   visible: Boolean) {
+                   visible: Boolean,
+                   restaurantId: Int,
+                   userId: Int,
+                   model: AppViewModel
+) {
     if (visible) {
         Dialog(
             onDismissRequest = {/*do nothing */}
         ) {
-            AddReviewForm(modifier, onDismissRequest)
+            AddReviewForm(modifier, onDismissRequest, restaurantId, userId, model)
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ReviewPreview() {
-    RestaurantReviewAppTheme {
-        AddReviewModal(Modifier, { println("hi")}, true)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun ReviewPreview() {
+//    RestaurantReviewAppTheme {
+//        AddReviewModal(Modifier, { println("hi")}, true, 1, 1)
+//    }
+//}
 
+fun addReview(restaurantId: Int, userId: Int, rating: Float, comment: String, model: AppViewModel) {
+    model.addReview(restaurantId, userId, rating, comment)
+}

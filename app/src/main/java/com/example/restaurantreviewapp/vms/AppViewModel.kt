@@ -2,6 +2,7 @@ package com.example.restaurantreviewapp.vms
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.restaurantreviewapp.dao.Review
 import com.example.restaurantreviewapp.dto.AppState
 import com.example.restaurantreviewapp.dto.RestaurantListState
 import com.example.restaurantreviewapp.dto.RestaurantState
@@ -36,6 +37,34 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
 
     fun loadRestaurant(id: Int) {
         getRestaurantReviews(id)
+    }
+
+    fun addReview(restaurantId: Int, userId: Int, rating: Float, comment: String) {
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        restaurantState = it.restaurantState.copy(
+                            loading = true
+                        )
+                    )
+                }
+                val review = restaurantService.postRestaurantRating(restaurantId, rating, comment)
+                appRepository.insertReview(Review(reviewId = review.id, userId = userId))
+                loadRestaurant(restaurantId)
+            } catch (e: Exception) {
+                println(e.toString())
+            } finally {
+                _state.update {
+                    it.copy(
+                        restaurantState = it.restaurantState.copy(
+                            loading = false
+                        )
+                    )
+                }
+            }
+
+        }
     }
 
     fun logout() {
@@ -75,6 +104,9 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
     }
 
     fun loadUser(username: String) {
+        if (_state.value.userState.user != null) {
+            return
+        }
         viewModelScope.launch {
             try {
                 _state.update {
@@ -89,12 +121,17 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                     it.copy(
                         userState = it.userState.copy(
                             user = UserDto(
-                                user.username, user.firstName, user.lastName
+                                user.username, user.firstName, user.lastName, user.id
                             )
                         )
                     )
                 }
-            } catch (e: Exception) {
+            }
+            catch (e: IllegalStateException) {
+                println(username)
+                return@launch
+            }
+            catch (e: Exception) {
                 println(e.toString())
             } finally {
                 _state.update {
