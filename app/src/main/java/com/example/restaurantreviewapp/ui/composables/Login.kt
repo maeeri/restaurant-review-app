@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,7 +34,7 @@ import com.example.restaurantreviewapp.ui.theme.Turquoise
 @Composable
 fun LoginPage(modifier: Modifier = Modifier,
               model: LoginViewModel,
-              topBar: @Composable() (modifier: Modifier) -> Unit
+              topBar: @Composable (modifier: Modifier) -> Unit
 ) {
     RestaurantReviewAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { paddingValues ->
@@ -84,7 +85,8 @@ fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel) {
                 onValueChange = { model.setPassword(it) },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    autoCorrectEnabled = false
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.Password
                 ),
                 label = { Text("password") }
             )
@@ -97,7 +99,8 @@ fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel) {
                     onValueChange = { repeatPassword = it },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
-                        autoCorrectEnabled = false
+                        autoCorrectEnabled = false,
+                        keyboardType = KeyboardType.Password
                     ),
                     label = { Text("repeat password") }
                 )

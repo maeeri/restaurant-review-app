@@ -1,5 +1,6 @@
 package com.example.restaurantreviewapp.vms
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.restaurantreviewapp.dao.User
@@ -47,8 +48,11 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                         addLoginError("User not created. Something went wrong.")
                     }
                 }
-            } catch (e: Exception) {
-                println(e.toString())
+            }
+            catch (e: SQLiteConstraintException) {
+                addLoginError("Username is already in use")
+            }
+            catch (e: Exception) {
                 addLoginError("Something went wrong")
             } finally {
                 _state.update {
