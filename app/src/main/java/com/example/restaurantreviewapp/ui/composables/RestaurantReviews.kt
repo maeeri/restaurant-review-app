@@ -41,6 +41,8 @@ fun ReviewList(modifier: Modifier = Modifier, model: AppViewModel) {
     if (state.loading) return
     val reviews = state.restaurantState.ratings
     val ownReviews = state.userState.reviews
+    val userId = state.userState.user?.id
+    val restaurantId = state.restaurantState.restaurant?.id
 
     Row(modifier) {
         LazyColumn(verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
@@ -48,9 +50,18 @@ fun ReviewList(modifier: Modifier = Modifier, model: AppViewModel) {
                 i -> CustomCard(modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-                        child = {
-                            ReviewItem(review = reviews[i], isOwnReview = ownReviews.contains(reviews[i].id))
-                        }
+                child = {
+                        ReviewItem(review = reviews[i],
+                            isOwnReview = ownReviews.contains(reviews[i].id),
+                            onDelete = {
+                                if (restaurantId != null && userId != null) {
+                                    model.deleteReview(
+                                        restaurantId, reviewId = reviews[i].id, userId
+                                    )
+                                }
+                            }
+                        )
+                    }
                 )
             }
         }
@@ -58,19 +69,18 @@ fun ReviewList(modifier: Modifier = Modifier, model: AppViewModel) {
 }
 
 @Composable
-fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto, isOwnReview: Boolean) {
+fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto, isOwnReview: Boolean, onDelete: () -> Unit) {
     var reviewTimeString = ""
     if (review.date_rated != null) {
-        try {
-            reviewTimeString = LocalDateTime
+        reviewTimeString = try {
+            LocalDateTime
                 .parse(review.date_rated.substring(0,19), DateTimeFormatter
                     .ofPattern("yyyy-MM-dd HH:mm:ss"))
                 .format(DateTimeFormatter
                     .ofPattern("dd.MM.yyyy HH:mm:ss"))
                 .toString()
-        } catch (e: Exception)
-        {
-            reviewTimeString = ""
+        } catch (e: Exception) {
+            ""
         }
     }
     Column(modifier
@@ -85,7 +95,7 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto, isOwnReview: Bo
                 if (isOwnReview) {
                     CustomIcon(
                         modifier.clickable {
-                            println("Boop ".plus(review.id))
+                            onDelete()
                         },
                         Icons.Default.Delete,
                         iconTintColor = Color.Red

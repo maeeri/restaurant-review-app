@@ -35,4 +35,7 @@ interface ReviewDao {
 
     @Query("SELECT review_id FROM reviews WHERE user_id=:userId")
     suspend fun getUserReviews(userId: Int): List<Int>
+
+    @Query("DELETE FROM reviews WHERE review_id = :reviewId AND user_id = :userId")
+    suspend fun deleteByIdAndUserId(reviewId: Int, userId: Int)
 }

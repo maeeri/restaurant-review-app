@@ -17,4 +17,6 @@ class AppRepository(private val userDao: UserDao, private val reviewDao: ReviewD
 
     suspend fun logOthersOut(username: String) = userDao.logOthersOut(username)
     suspend fun logOut(username: String) = userDao.logOut(username)
+
+    suspend fun deleteReview(reviewId: Int, userId: Int) = reviewDao.deleteByIdAndUserId(reviewId, userId)
 }

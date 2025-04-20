@@ -29,16 +29,141 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
         )
     )
     val state = _state.asStateFlow()
-
     init {
         getRestaurants()
         getLoggedInUser()
     }
-
+    private fun getUserReviews(userId: Int) {
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        loading = true,
+                        error = null
+                    )
+                }
+                val reviewIds = appRepository.getUserReviews(userId)
+                _state.update {
+                    it.copy(
+                        userState = it.userState.copy(
+                            reviews = reviewIds
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
+            } finally {
+                _state.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
+    private fun getLoggedInUser() {
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        loading = true,
+                        error = null
+                    )
+                }
+                val username = appRepository.getLoggedInUser()
+                loadUser(username)
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
+            } finally {
+                _state.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
+    private fun getRestaurants() {
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        error = null,
+                        loading = true
+                    )
+                }
+                val restaurants = restaurantService.getRestaurants()
+                _state.update {
+                    it.copy(
+                        restaurantListState = it.restaurantListState.copy(
+                            restaurantList = restaurants
+                        )
+                    )
+                }
+            }
+            catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
+            }
+            finally {
+                _state.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
+    private fun getRestaurantReviews(id: Int) {
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        error = null,
+                        loading = true
+                    )
+                }
+                val restaurant = restaurantService.getRestaurant(id)
+                val ratings = restaurantService.getRestaurantRatings(id)
+                _state.update {
+                    it.copy(
+                        restaurantState = it.restaurantState.copy(
+                            restaurant = restaurant,
+                            ratings = ratings
+                        )
+                    )
+                }
+            }
+            catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        error = e.toString()
+                    )
+                }
+            }
+            finally {
+                _state.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+    }
     fun loadRestaurant(id: Int) {
         getRestaurantReviews(id)
     }
-
     fun addReview(restaurantId: Int, userId: Int, rating: Float, comment: String) {
         viewModelScope.launch {
             try {
@@ -68,7 +193,6 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
 
         }
     }
-
     fun logout() {
         viewModelScope.launch {
             try {
@@ -105,7 +229,6 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             }
         }
     }
-
     fun loadUser(username: String) {
         println(username)
         if (_state.value.userState.user != null) {
@@ -150,8 +273,7 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             }
         }
     }
-
-    private fun getUserReviews(userId: Int) {
+    fun deleteReview(restaurantId: Int, reviewId: Int, userId: Int) {
         viewModelScope.launch {
             try {
                 _state.update {
@@ -160,76 +282,11 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                         error = null
                     )
                 }
-                val reviewIds = appRepository.getUserReviews(userId)
-                _state.update {
-                    it.copy(
-                        userState = it.userState.copy(
-                            reviews = reviewIds
-                        )
-                    )
-                }
+                restaurantService.deleteRating(restaurantId, reviewId)
+                appRepository.deleteReview(reviewId, userId)
+                loadRestaurant(restaurantId)
+                getUserReviews(userId)
             } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
-            } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
-            }
-        }
-    }
-
-    private fun getLoggedInUser() {
-        viewModelScope.launch {
-            try {
-                _state.update {
-                    it.copy(
-                        loading = true,
-                        error = null
-                    )
-                }
-                val username = appRepository.getLoggedInUser()
-                loadUser(username)
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
-            } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
-            }
-        }
-    }
-
-    private fun getRestaurants() {
-        viewModelScope.launch {
-            try {
-                _state.update {
-                    it.copy(
-                        error = null,
-                        loading = true
-                    )
-                }
-                val restaurants = restaurantService.getRestaurants()
-                _state.update {
-                    it.copy(
-                        restaurantListState = it.restaurantListState.copy(
-                            restaurantList = restaurants
-                        )
-                    )
-                }
-            }
-            catch (e: Exception) {
                 _state.update {
                     it.copy(
                         error = e.toString()
@@ -243,43 +300,7 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                     )
                 }
             }
-        }
-    }
 
-    private fun getRestaurantReviews(id: Int) {
-        viewModelScope.launch {
-            try {
-                _state.update {
-                    it.copy(
-                        error = null,
-                        loading = true
-                    )
-                }
-                val restaurant = restaurantService.getRestaurant(id)
-                val ratings = restaurantService.getRestaurantRatings(id)
-                _state.update {
-                    it.copy(
-                        restaurantState = it.restaurantState.copy(
-                            restaurant = restaurant,
-                            ratings = ratings
-                        )
-                    )
-                }
-            }
-            catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
-            }
-            finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
-            }
         }
     }
 }
