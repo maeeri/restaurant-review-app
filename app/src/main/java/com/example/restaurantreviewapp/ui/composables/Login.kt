@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Scaffold
@@ -25,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.restaurantreviewapp.vms.LoginViewModel
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
@@ -83,6 +83,9 @@ fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel) {
                 value = loginState.password,
                 onValueChange = { model.setPassword(it) },
                 visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false
+                ),
                 label = { Text("password") }
             )
         }
@@ -93,6 +96,9 @@ fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel) {
                     value = repeatPassword,
                     onValueChange = { repeatPassword = it },
                     visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        autoCorrectEnabled = false
+                    ),
                     label = { Text("repeat password") }
                 )
             }

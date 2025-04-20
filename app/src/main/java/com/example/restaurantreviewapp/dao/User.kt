@@ -36,6 +36,9 @@ interface UserDao {
     @Query("SELECT password FROM users WHERE username=:username")
     suspend fun getPasswordHash(username: String): String
 
+    @Query("UPDATE users SET logged_in = 1 WHERE username = :username")
+    suspend fun logUserIn(username: String)
+
     @Query("SELECT * FROM users WHERE logged_in=1")
     suspend fun getLoggedInUser(): User
 

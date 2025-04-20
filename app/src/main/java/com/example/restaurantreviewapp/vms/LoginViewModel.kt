@@ -18,12 +18,18 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
     private val _state  = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
 
-    fun registerUser(repeatPassword: String) {
-        if (!validateSignUp(repeatPassword)) return
+    fun registerUser(repeatPassword: String): Boolean {
+        var output = false
+        if (!validateSignUp(repeatPassword)) return output
 
         viewModelScope.launch {
-            _state.value.apply {
-                try {
+            try {
+                _state.update {
+                    it.copy(
+                        loading = true
+                    )
+                }
+                _state.value.apply {
                     val passwordHash = BCrypt.hashpw(password, BCrypt.gensalt())
                     val user = User(
                         username = username,
@@ -34,21 +40,67 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                     )
                     appRepository.insertUser(user)
                     val userFromDb = appRepository.getUser(username)
-                    println(userFromDb)
-                    clearLoginInfo()
-                } catch (e: Exception) {
-                    addLoginError("Something went wrong")
-                } finally {
-
+                    if (userFromDb.username == username) {
+                        output = true
+                        clearLoginInfo()
+                    } else {
+                        addLoginError("User not created. Something went wrong.")
+                    }
+                }
+            } catch (e: Exception) {
+                println(e.toString())
+                addLoginError("Something went wrong")
+            } finally {
+                _state.update {
+                    it.copy(
+                        loading = false
+                    )
                 }
             }
         }
+        return output
     }
 
-    fun login() {
-        println(state.value.username)
-        println(state.value.password)
-        clearLoginInfo()
+    fun login(): Boolean {
+        var output = false
+        if(!validateSignIn()) return output
+
+        viewModelScope.launch {
+            try {
+                _state.update {
+                    it.copy(
+                        loading = true
+                    )
+                }
+                _state.value.apply {
+                    if (!BCrypt.checkpw(password, appRepository.getPasswordHash(username))) {
+                        addLoginError("Wrong password")
+                        setPassword("")
+                        return@launch
+                    } else {
+                        appRepository.logOthersOut(username)
+                        appRepository.logUserIn(username)
+                    }
+                }
+                clearLoginInfo()
+                output = true
+            }
+            catch (e: IllegalStateException) {
+                println(e.toString())
+                addLoginError("User was not found")
+            }
+            catch (e: Exception) {
+                println(e.toString())
+                addLoginError("Something went wrong")
+            } finally {
+                _state.update {
+                    it.copy(
+                        loading = false
+                    )
+                }
+            }
+        }
+        return output
     }
 
     fun setUsername(username: String) {
@@ -108,6 +160,18 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             if (password == "") addLoginError("Please provide a password")
             if (firstName == "") addLoginError("Please provide a first name")
             if (lastName == "") addLoginError("Please provide a last name")
+
+            if (errors.size > 0) output = false
+        }
+        return output
+    }
+
+    private fun validateSignIn(): Boolean {
+        var output = true
+        _state.value.apply {
+            errors.clear()
+            if (username == "") addLoginError("Please provide a username")
+            if (password == "") addLoginError("Please provide a password")
 
             if (errors.size > 0) output = false
         }

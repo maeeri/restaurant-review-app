@@ -94,8 +94,8 @@ class MainActivity : ComponentActivity() {
                 drawerState = drawerState
             ) {
                 AppNavHost(navController = navController,
-                    startDestination = "authfeature",
-                    onMenuOpen = {
+                    startDestination = "restaurantfeature",
+                    onMenuClick = {
                         scope.launch {
                             drawerState.apply {
                                 if (isClosed) open() else close()
@@ -113,7 +113,7 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     startDestination: String,
-    onMenuOpen: () -> Unit
+    onMenuClick: () -> Unit
 ) {
     NavHost(modifier = modifier,
         navController = navController,
@@ -127,7 +127,7 @@ fun AppNavHost(
                     topBar = { AppBar(modifier,
                         "Restaurant list",
                         navController = navController,
-                        onMenuOpen) }
+                        onMenuClick) }
                 )
             }
 
@@ -138,7 +138,7 @@ fun AppNavHost(
                     topBar = { AppBar(modifier,
                         "Restaurant reviews",
                         navController = navController,
-                        onMenuOpen) }
+                        onMenuClick) }
                 )
             }
         }
@@ -150,7 +150,7 @@ fun AppNavHost(
                     topBar = { AppBar(modifier,
                         "Sign in",
                         navController = navController,
-                        onMenuOpen) }
+                        onMenuClick) }
                 )
             }
         }

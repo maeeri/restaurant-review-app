@@ -101,10 +101,10 @@ fun CustomCard(modifier: Modifier = Modifier,
 fun AppBar(modifier: Modifier = Modifier,
            text: String,
            navController: NavController,
-           onMenuOpen: () -> Unit) {
+           onMenuClick: () -> Unit) {
     TopAppBar({ Text(text)}, modifier.clickable { navController.navigate("RestaurantListPage") },
         navigationIcon = {
-        IconButton(onClick = { onMenuOpen() }) {
+        IconButton(onClick = { onMenuClick() }) {
             Icon(
                 imageVector = Icons.Filled.Menu,
                 contentDescription = "menu"
