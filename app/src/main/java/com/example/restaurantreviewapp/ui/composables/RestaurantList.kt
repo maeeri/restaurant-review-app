@@ -36,8 +36,8 @@ import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 
 @Composable
 fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
-    if (model.state.collectAsState().value.loading) return
-    val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantListState.restaurantList
+    val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantList
+    println(model.state.collectAsState().value)
     LazyColumn(modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         items(restaurants.size) {
             i -> CustomCard(modifier = Modifier
@@ -56,14 +56,12 @@ fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navContro
 @Composable
 fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
     if (restaurant == null) return
-
     val statusColor: Color = when(restaurant.open_status.lowercase()) {
         "open" -> DarkGreen
         "closed" -> Color.Red
         "closing soon" -> Orange
         else -> Color.Black
     }
-
     Row(modifier = Modifier
         .background(color = CardBackground)
         .height(200.dp)
@@ -126,12 +124,8 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
 fun RestaurantListPage(modifier: Modifier = Modifier,
                        model: AppViewModel,
                        navController: NavController,
-                       topBar: @Composable() (modifier: Modifier) -> Unit,
-                       username: String? = null)
+                       topBar: @Composable (modifier: Modifier) -> Unit)
 {
-    if (username != null && username != "{username}" && !model.state.collectAsState().value.loading) {
-        model.loadUser(username)
-    }
     RestaurantReviewAppTheme {
         Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
             Column(modifier = modifier

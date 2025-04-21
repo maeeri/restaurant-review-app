@@ -20,22 +20,14 @@ data class RatingDto (
 )
 
 data class AppState (
-    val restaurantListState: RestaurantListState,
     val restaurantState: RestaurantState,
     val userState: UserState,
+    val restaurantList: List<RestaurantDto> = listOf(),
     val loading: Boolean = false,
     val error: String? = null
 )
 
-data class RestaurantListState (
-//    val loading: Boolean = false,
-    val restaurantList: List<RestaurantDto> = listOf()//,
-//    val error: String? = null
-)
-
 data class RestaurantState (
-//    val loading: Boolean = false,
     val restaurant: RestaurantDto? = null,
-    val ratings: List<RatingDto> = listOf()//,
-//    val error: String? = null
+    val ratings: List<RatingDto> = listOf()
 )

@@ -2,8 +2,7 @@ package com.example.restaurantreviewapp.dto
 
 data class LoginState(
     val loading: Boolean = false,
-    val errors: MutableList<String> = mutableListOf(),
-    val errorString: String = "",
+    val error: String? = null,
     val signUpVisible: Boolean = false,
     val username: String = "",
     val password: String ="",

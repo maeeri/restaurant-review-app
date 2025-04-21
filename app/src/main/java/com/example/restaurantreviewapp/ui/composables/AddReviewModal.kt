@@ -25,7 +25,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.restaurantreviewapp.ui.theme.DarkGreen
 import com.example.restaurantreviewapp.ui.theme.Turquoise
 import com.example.restaurantreviewapp.vms.AppViewModel
-import java.math.RoundingMode
+import kotlin.math.roundToInt
 
 @Composable
 fun AddReviewForm(modifier: Modifier = Modifier,
@@ -56,7 +56,7 @@ fun AddReviewForm(modifier: Modifier = Modifier,
                 )
             }
             Row {
-                Text(rating.toBigDecimal().setScale(1, RoundingMode.UP).toFloat().toString())
+                Text(((rating * 2).roundToInt().toFloat()/2).toString())
             }
             Row {
                 TextField(
@@ -73,7 +73,7 @@ fun AddReviewForm(modifier: Modifier = Modifier,
                         onClick = {
                             addReview(restaurantId,
                                 userId,
-                                rating = rating.toBigDecimal().setScale(1, RoundingMode.UP).toFloat(),
+                                rating = ((rating * 2).roundToInt().toFloat()/2),
                                 comment,
                                 model)
                             rating = 0f

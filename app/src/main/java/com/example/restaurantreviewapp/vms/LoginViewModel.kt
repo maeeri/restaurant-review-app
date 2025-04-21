@@ -7,6 +7,7 @@ import com.example.restaurantreviewapp.dao.User
 import com.example.restaurantreviewapp.dto.LoginState
 import com.example.restaurantreviewapp.repos.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -18,7 +19,51 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(private val appRepository: AppRepository) : ViewModel() {
     private val _state  = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
+    private fun validateSignUp(repeatPassword: String): Boolean {
+        resetError()
+        var output = true
+        _state.value.apply {
+            if (password != repeatPassword) addLoginError("Passwords did not match")
+            if (username == "") addLoginError("Please provide a username")
+            if (password == "") addLoginError("Please provide a password")
+            if (firstName == "") addLoginError("Please provide a first name")
+            if (lastName == "") addLoginError("Please provide a last name")
 
+            if (error != null) output = false
+        }
+        return output
+    }
+    private fun validateSignIn(): Boolean {
+        var output = true
+        resetError()
+        _state.value.apply {
+            if (username == "") addLoginError("Please provide a username")
+            if (password == "") addLoginError("Please provide a password")
+            if (error != null) output = false
+        }
+        return output
+    }
+    private fun clearLoginInfo() {
+        setPassword("")
+        setUsername("")
+        setLastName("")
+        setFirstName("")
+        resetError()
+    }
+    private fun addLoginError(error: String?) {
+        _state.update {
+            it.copy(
+                error = if (it.error == null) error else it.error.plus("\n").plus(error)
+            )
+        }
+    }
+    private fun resetError () {
+        _state.update {
+            it.copy(
+                error = null
+            )
+        }
+    }
     fun registerUser(repeatPassword: String) {
         _state.update {
             it.copy(
@@ -27,7 +72,7 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
         }
         if (!validateSignUp(repeatPassword)) return
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
                 _state.update {
                     it.copy(
@@ -71,7 +116,6 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             }
         }
     }
-
     fun login() {
         _state.update {
             it.copy(
@@ -80,7 +124,7 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
         }
         if(!validateSignIn()) return
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
                 _state.update {
                     it.copy(
@@ -105,11 +149,9 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                 }
             }
             catch (e: IllegalStateException) {
-                println(e.toString())
                 addLoginError("User was not found")
             }
             catch (e: Exception) {
-                println(e.toString())
                 addLoginError("Something went wrong")
             } finally {
                 _state.update {
@@ -120,7 +162,6 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             }
         }
     }
-
     fun setUsername(username: String) {
         _state.update {
             it.copy(
@@ -128,7 +169,6 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             )
         }
     }
-
     fun setPassword(password: String) {
         _state.update {
             it.copy(
@@ -136,7 +176,6 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             )
         }
     }
-
     fun setFirstName(firstName: String) {
         _state.update {
             it.copy(
@@ -144,7 +183,6 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             )
         }
     }
-
     fun setLastName(lastName: String) {
         _state.update {
             it.copy(
@@ -152,74 +190,12 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             )
         }
     }
-
     fun setSignUpVisibility(visible: Boolean) {
-        viewModelScope.launch {
-            try {
-                _state.update {
-                 it.copy(
-                    signUpVisible = visible
-                    )
-                }
-            } catch (e: Exception) {
-                println(e.toString())
-                addLoginError("Something went wrong")
-            }
+        _state.update {
+         it.copy(
+            signUpVisible = visible
+            )
         }
         clearLoginInfo()
-    }
-
-    private fun validateSignUp(repeatPassword: String): Boolean {
-        var output = true
-        _state.value.apply {
-            errors.clear()
-            if (password != repeatPassword) addLoginError("Passwords did not match")
-            if (username == "") addLoginError("Please provide a username")
-            if (password == "") addLoginError("Please provide a password")
-            if (firstName == "") addLoginError("Please provide a first name")
-            if (lastName == "") addLoginError("Please provide a last name")
-
-            if (errors.size > 0) output = false
-        }
-        return output
-    }
-
-    private fun validateSignIn(): Boolean {
-        var output = true
-        _state.value.apply {
-            errors.clear()
-            if (username == "") addLoginError("Please provide a username")
-            if (password == "") addLoginError("Please provide a password")
-
-            if (errors.size > 0) output = false
-        }
-        return output
-    }
-
-    private fun clearLoginInfo() {
-        setPassword("")
-        setUsername("")
-        setLastName("")
-        setFirstName("")
-        clearLoginErrors()
-    }
-
-    private fun addLoginError(error: String?) {
-        if (error == null) _state.value.errors.clear()
-        else _state.value.errors.add(error)
-        _state.update {
-            it.copy(
-                errorString = it.errors.joinToString("\n")
-            )
-        }
-    }
-
-    private fun clearLoginErrors() {
-        _state.value.errors.clear()
-        _state.update {
-            it.copy(
-                errorString = ""
-            )
-        }
     }
 }

@@ -22,15 +22,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.restaurantreviewapp.vms.LoginViewModel
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
+import com.example.restaurantreviewapp.vms.AppViewModel
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier,
@@ -60,9 +63,12 @@ fun LoginPage(modifier: Modifier = Modifier,
 fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel, navController: NavController) {
     var repeatPassword by remember { mutableStateOf("") }
     val loginState = model.state.collectAsState().value
+    val aVm = hiltViewModel<AppViewModel>()
 
     if (loginState.success) {
-        navController.navigate("RestaurantListPage/{username}")
+        LocalSoftwareKeyboardController.current?.hide()
+        aVm.loadUser(loginState.username)
+        navController.navigate("RestaurantListPage")
     }
     val visible = loginState.signUpVisible
 
@@ -74,7 +80,7 @@ fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel, navControll
             Text(actionText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
         }
         Row(modifier.align(Alignment.CenterHorizontally).padding(3.dp)) {
-            ErrorTextBox(modifier, loginState.errorString)
+            loginState.error?.let { ErrorTextBox(modifier, it) }
         }
         Row {
             TextField(
@@ -165,11 +171,3 @@ fun ErrorTextBox(modifier: Modifier = Modifier, text: String) {
     }
 }
 
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ReviewPreview() {
-//    RestaurantReviewAppTheme {
-//        LoginPage(navController = rememberNavController())
-//    }
-//}

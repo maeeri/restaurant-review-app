@@ -84,7 +84,7 @@ fun StarRating(modifier: Modifier = Modifier, rating: Float) {
 
 @Composable
 fun CustomCard(modifier: Modifier = Modifier,
-               child: @Composable() (modifier: Modifier) -> Unit) {
+               child: @Composable (modifier: Modifier) -> Unit) {
     Card(modifier = modifier
         .padding(7.dp)
         .shadow(2.dp, shape = RoundedCornerShape(10.dp), ambientColor = Color.LightGray)

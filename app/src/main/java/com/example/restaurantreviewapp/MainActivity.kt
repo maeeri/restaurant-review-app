@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
@@ -37,6 +38,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest.Builder
+import coil3.request.crossfade
 import com.example.restaurantreviewapp.containers.AppContainer
 import com.example.restaurantreviewapp.ui.composables.AppBar
 import com.example.restaurantreviewapp.vms.LoginViewModel
@@ -65,10 +69,18 @@ class MainActivity : ComponentActivity() {
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        AsyncImage(
+                            modifier = Modifier.padding(10.dp),
+                            model = Builder(LocalContext.current)
+                                .data("https://cdn.pixabay.com/photo/2014/04/02/10/48/food-304597_1280.png")
+                                .crossfade(true)
+                                .build(),
+                            contentDescription = "image"
+                        )
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp))
                         NavigationDrawerItem(
                             label = {
-                                Text("Restaurant list")
+                                Text("Home")
                             },
                             icon = {
                                 Icon(Icons.Default.Home, contentDescription = "Restaurant list")
@@ -84,7 +96,7 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.height(16.dp))
                         NavigationDrawerItem(
                             label = {
-                                Text("Sign in")
+                                Text("Sign in / switch user")
                             },
                             icon = {
                                 Icon(Icons.Default.Lock, contentDescription = "Sign in")
@@ -153,23 +165,10 @@ fun AppNavHost(
                     model = model,
                     navController = navController,
                     topBar = { AppBar(modifier,
-                        "Restaurant list",
+                        "Home",
                         onMenuClick) }
                 )
             }
-            composable("RestaurantListPage/{username}") {
-                val model = it.SharedViewModel<AppViewModel>(navController)
-                val username = it.arguments?.getString("username")
-                RestaurantListPage(
-                    model = model,
-                    navController = navController,
-                    topBar = { AppBar(modifier,
-                        "Restaurant list",
-                        onMenuClick)},
-                    username = username
-                )
-            }
-
             composable("RestaurantPage") {
                 val model = it.SharedViewModel<AppViewModel>(navController)
                 RestaurantPage(
@@ -237,11 +236,3 @@ internal interface AppComponent {
 
     fun inject(app: ReviewApplication?)
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun AppPreview() {
-//    RestaurantReviewAppTheme {
-//        App()
-//    }
-//}

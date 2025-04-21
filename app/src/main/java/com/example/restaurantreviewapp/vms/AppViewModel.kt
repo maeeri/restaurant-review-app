@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.restaurantreviewapp.dao.Review
 import com.example.restaurantreviewapp.dto.AppState
-import com.example.restaurantreviewapp.dto.RestaurantListState
+import com.example.restaurantreviewapp.dto.RatingDto
+import com.example.restaurantreviewapp.dto.RestaurantDto
 import com.example.restaurantreviewapp.dto.RestaurantState
 import com.example.restaurantreviewapp.dto.UserDto
 import com.example.restaurantreviewapp.dto.UserState
 import com.example.restaurantreviewapp.repos.AppRepository
 import com.example.restaurantreviewapp.services.RestaurantsDataService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -23,7 +25,6 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                                        private val appRepository: AppRepository) : ViewModel() {
     private val _state = MutableStateFlow(
         AppState(
-            RestaurantListState(),
             RestaurantState(),
             UserState()
         )
@@ -33,272 +34,184 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
         getRestaurants()
         getLoggedInUser()
     }
-    private fun getUserReviews(userId: Int) {
-        viewModelScope.launch {
-            try {
-                _state.update {
-                    it.copy(
-                        loading = true,
-                        error = null
-                    )
-                }
-                val reviewIds = appRepository.getUserReviews(userId)
-                _state.update {
-                    it.copy(
-                        userState = it.userState.copy(
-                            reviews = reviewIds
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
-            } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
-            }
-        }
-    }
     private fun getLoggedInUser() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        loading = true,
-                        error = null
-                    )
-                }
+                initializeFunctionCall()
                 val username = appRepository.getLoggedInUser()
                 loadUser(username)
+                val user = appRepository.getUser(username)
+                setUser(UserDto(user.username, user.firstName, user.lastName, user.id))
+                val reviewIds = appRepository.getUserReviews(user.id)
+                setUserReviews(reviewIds)
             } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
+                setError(e.toString())
             } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpFunctionCall()
             }
         }
     }
     private fun getRestaurants() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        error = null,
-                        loading = true
-                    )
-                }
+                initializeFunctionCall()
                 val restaurants = restaurantService.getRestaurants()
-                _state.update {
-                    it.copy(
-                        restaurantListState = it.restaurantListState.copy(
-                            restaurantList = restaurants
-                        )
-                    )
-                }
+                setRestaurantList(restaurants)
             }
             catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
+                setError(e.toString())
             }
             finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpFunctionCall()
             }
         }
     }
     private fun getRestaurantReviews(id: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        error = null,
-                        loading = true
-                    )
-                }
+                initializeFunctionCall()
                 val restaurant = restaurantService.getRestaurant(id)
                 val ratings = restaurantService.getRestaurantRatings(id)
-                _state.update {
-                    it.copy(
-                        restaurantState = it.restaurantState.copy(
-                            restaurant = restaurant,
-                            ratings = ratings
-                        )
-                    )
-                }
+                setRestaurant(restaurant, ratings)
             }
             catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
+                setError(e.toString())
             }
             finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpFunctionCall()
             }
+        }
+    }
+    private fun initializeFunctionCall() {
+        _state.update {
+            it.copy(
+                loading = true,
+                error = null
+            )
+        }
+    }
+    private fun cleanUpFunctionCall() {
+        _state.update {
+            it.copy(
+                loading = false
+            )
+        }
+    }
+    private fun setUserReviews(reviews: List<Int>) {
+        _state.update {
+            it.copy(
+                userState = it.userState.copy(
+                    reviews = reviews
+                )
+            )
+        }
+    }
+    private fun setError(error: String?) {
+        _state.update {
+            it.copy(
+                error = error
+            )
+        }
+    }
+    private fun setUser(user: UserDto?) {
+        _state.update {
+            it.copy(
+                userState = it.userState.copy(
+                    user = user
+                )
+            )
+        }
+    }
+    private fun setRestaurantList(restaurants: List<RestaurantDto>) {
+        _state.update {
+            it.copy(
+                restaurantList = restaurants
+            )
+        }
+    }
+    private fun setRestaurant(restaurant: RestaurantDto, ratings: List<RatingDto>) {
+        _state.update {
+            it.copy(
+                restaurantState = it.restaurantState.copy(
+                    restaurant = restaurant,
+                    ratings = ratings
+                )
+            )
         }
     }
     fun loadRestaurant(id: Int) {
         getRestaurantReviews(id)
     }
     fun addReview(restaurantId: Int, userId: Int, rating: Float, comment: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        loading = true,
-                        error = null
-                    )
-                }
+                initializeFunctionCall()
                 val review = restaurantService.postRestaurantRating(restaurantId, rating, comment)
                 appRepository.insertReview(Review(reviewId = review.id, userId = userId))
-                getUserReviews(userId)
+                val reviewIds = appRepository.getUserReviews(userId)
+                setUserReviews(reviewIds)
                 loadRestaurant(restaurantId)
             } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
+                setError(e.toString())
             } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpFunctionCall()
             }
 
         }
     }
     fun logout() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        loading = true,
-                        error = null
-                    )
-                }
+                initializeFunctionCall()
                 _state.value.userState.user?.apply {
                     if (username != null) {
                         appRepository.logOut(username)
                     }
                 }
-                _state.update {
-                    it.copy(
-                        userState = it.userState.copy(
-                            user = null
-                        )
-                    )
-                }
+                setUser(null)
             } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
+                setError(e.toString())
             } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpFunctionCall()
             }
         }
     }
     fun loadUser(username: String) {
-        println(username)
         if (_state.value.userState.user != null) {
             return
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        loading = true,
-                        error = null
-                    )
-                }
-                val user = appRepository.getUser(username)
-                _state.update {
-                    it.copy(
-                        userState = it.userState.copy(
-                            user = UserDto(
-                                user.username, user.firstName, user.lastName, user.id
-                            )
-                        )
-                    )
-                }
-                getUserReviews(user.id)
-            }
-            catch (e: IllegalStateException) {
+                initializeFunctionCall()
                 println(username)
-                return@launch
+                val user = appRepository.getUser(username)
+                setUser(UserDto(user.username, user.firstName, user.lastName, user.id))
+                val reviewIds = appRepository.getUserReviews(user.id)
+                setUserReviews(reviewIds)
             }
             catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
+                setError(e.toString())
             } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpFunctionCall()
             }
         }
     }
     fun deleteReview(restaurantId: Int, reviewId: Int, userId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        loading = true,
-                        error = null
-                    )
-                }
+                initializeFunctionCall()
                 restaurantService.deleteRating(restaurantId, reviewId)
                 appRepository.deleteReview(reviewId, userId)
-                loadRestaurant(restaurantId)
-                getUserReviews(userId)
+                val restaurant = restaurantService.getRestaurant(restaurantId)
+                val ratings = restaurantService.getRestaurantRatings(restaurantId)
+                setRestaurant(restaurant, ratings)
+                val reviewIds = appRepository.getUserReviews(userId)
+                setUserReviews(reviewIds)
             } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = e.toString()
-                    )
-                }
+                setError(e.toString())
             }
             finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpFunctionCall()
             }
 
         }

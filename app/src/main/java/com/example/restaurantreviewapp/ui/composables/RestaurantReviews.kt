@@ -125,7 +125,7 @@ fun RestaurantReviews(modifier: Modifier = Modifier, model: AppViewModel) {
 @Composable
 fun RestaurantPage(modifier: Modifier = Modifier,
                    model: AppViewModel,
-                   topBar: @Composable() (modifier: Modifier) -> Unit) {
+                   topBar: @Composable (modifier: Modifier) -> Unit) {
     var showAddReview by remember { mutableStateOf(false) }
     val state = model.state.collectAsState().value
     if (state.loading) return
