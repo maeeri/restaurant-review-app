@@ -3,7 +3,6 @@ package com.example.restaurantreviewapp.vms
 import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil3.compose.AsyncImagePainter
 import com.example.restaurantreviewapp.dao.User
 import com.example.restaurantreviewapp.dto.LoginState
 import com.example.restaurantreviewapp.repos.AppRepository

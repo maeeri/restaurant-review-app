@@ -40,7 +40,6 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val username = appRepository.getLoggedInUser()
-                loadUser(username)
                 val user = appRepository.getUser(username)
                 setUser(UserDto(user.username, user.firstName, user.lastName, user.id))
                 val reviewIds = appRepository.getUserReviews(user.id)
@@ -74,19 +73,6 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             }
             finally {
                 cleanUpFunctionCall()
-            }
-        }
-    }
-    private fun loadUser(username: String) {
-        viewModelScope.launch(Dispatchers.Default) {
-            try {
-                val user = appRepository.getUser(username)
-                setUser(UserDto(user.username, user.firstName, user.lastName, user.id))
-                val reviewIds = appRepository.getUserReviews(user.id)
-                setUserReviews(reviewIds)
-            }
-            catch (e: Exception) {
-                setError(e.toString())
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.restaurantreviewapp.ui.composables
 
-import android.view.Display.Mode
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,13 +28,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.navArgument
 import com.example.restaurantreviewapp.vms.LoginViewModel
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
-import com.example.restaurantreviewapp.vms.AppViewModel
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier,
