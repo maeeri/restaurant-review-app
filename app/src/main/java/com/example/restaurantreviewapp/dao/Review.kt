@@ -27,7 +27,6 @@ data class Review(
     @ColumnInfo(name = "user_id")
     val userId: Int
 )
-
 @Dao
 interface ReviewDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)

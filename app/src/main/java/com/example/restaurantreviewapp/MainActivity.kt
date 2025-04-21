@@ -41,7 +41,6 @@ import androidx.navigation.navigation
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
-import com.example.restaurantreviewapp.containers.AppContainer
 import com.example.restaurantreviewapp.ui.composables.AppBar
 import com.example.restaurantreviewapp.vms.LoginViewModel
 import com.example.restaurantreviewapp.vms.AppViewModel
@@ -49,8 +48,6 @@ import com.example.restaurantreviewapp.ui.composables.LoginPage
 import com.example.restaurantreviewapp.ui.composables.LogoutPage
 import com.example.restaurantreviewapp.ui.composables.RestaurantListPage
 import com.example.restaurantreviewapp.ui.composables.RestaurantPage
-import dagger.BindsInstance
-import dagger.Component
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
@@ -215,22 +212,4 @@ inline fun <reified T : ViewModel> NavBackStackEntry.SharedViewModel(navControll
 
 @HiltAndroidApp
 class ReviewApplication : Application() {
-    private lateinit var container: AppContainer
-
-    override fun onCreate() {
-        super.onCreate()
-        container = AppContainer(this)
-    }
-}
-
-@Component
-internal interface AppComponent {
-    @Component.Builder
-    interface Builder {
-        @BindsInstance
-        fun application(application: Application?): Builder?
-        fun build(): AppComponent?
-    }
-
-    fun inject(app: ReviewApplication?)
 }
