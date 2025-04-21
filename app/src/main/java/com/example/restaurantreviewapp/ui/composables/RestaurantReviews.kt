@@ -2,6 +2,7 @@ package com.example.restaurantreviewapp.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,8 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.restaurantreviewapp.dto.RatingDto
+import com.example.restaurantreviewapp.ui.theme.DarkCardBackground
 import com.example.restaurantreviewapp.vms.AppViewModel
-import com.example.restaurantreviewapp.ui.theme.CardBackground
+import com.example.restaurantreviewapp.ui.theme.LightCardBackground
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -83,9 +85,10 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto, isOwnReview: Bo
             ""
         }
     }
+    val background = if (isSystemInDarkTheme()) DarkCardBackground else LightCardBackground
     Column(modifier
         .fillMaxWidth()
-        .background(CardBackground)
+        .background(background)
         .padding(8.dp)) {
         Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
@@ -98,7 +101,8 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto, isOwnReview: Bo
                             onDelete()
                         },
                         Icons.Default.Delete,
-                        iconTintColor = Color.Red
+                        iconTintColor = Color.Red,
+                        backGroundColor = background
                     )
                 }
             }
@@ -114,7 +118,14 @@ fun ReviewItem(modifier: Modifier = Modifier, review: RatingDto, isOwnReview: Bo
 fun RestaurantReviews(modifier: Modifier = Modifier, model: AppViewModel) {
     Column {
         Row {
-            CustomCard(child = { model.state.collectAsState().value.restaurantState.restaurant?.let { RestaurantItem(restaurant = it) } })
+            CustomCard(
+                child = { model
+                    .state
+                    .collectAsState()
+                    .value
+                    .restaurantState
+                    .restaurant?.let { RestaurantItem(restaurant = it) } }
+            )
         }
         Row {
             ReviewList(modifier, model)

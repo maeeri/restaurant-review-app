@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.ui.text.google.fonts)
     annotationProcessor(libs.androidx.room.compiler)
     implementation(libs.androidx.lifecycle.extensions)
     annotationProcessor(libs.androidx.lifecycle.compiler)

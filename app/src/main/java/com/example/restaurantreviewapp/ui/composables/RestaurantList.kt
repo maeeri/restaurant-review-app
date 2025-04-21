@@ -2,6 +2,7 @@ package com.example.restaurantreviewapp.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,9 +29,11 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.example.restaurantreviewapp.dto.RestaurantDto
+import com.example.restaurantreviewapp.ui.theme.DarkCardBackground
 import com.example.restaurantreviewapp.vms.AppViewModel
-import com.example.restaurantreviewapp.ui.theme.CardBackground
+import com.example.restaurantreviewapp.ui.theme.LightCardBackground
 import com.example.restaurantreviewapp.ui.theme.DarkGreen
+import com.example.restaurantreviewapp.ui.theme.LightGreen
 import com.example.restaurantreviewapp.ui.theme.Orange
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 
@@ -55,14 +58,16 @@ fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navContro
 @Composable
 fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
     if (restaurant == null) return
+    val green = if (isSystemInDarkTheme()) LightGreen else DarkGreen
     val statusColor: Color = when(restaurant.open_status.lowercase()) {
-        "open" -> DarkGreen
+        "open" -> green
         "closed" -> Color.Red
         "closing soon" -> Orange
         else -> Color.Black
     }
+    val background = if (isSystemInDarkTheme()) DarkCardBackground else LightCardBackground
     Row(modifier = Modifier
-        .background(color = CardBackground)
+        .background(color = background)
         .height(200.dp)
         .padding(3.dp),
         verticalAlignment = Alignment.CenterVertically) {
@@ -85,7 +90,9 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
                 Text(
                     restaurant.name,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleLarge)
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Row {
                 Column {
@@ -93,6 +100,7 @@ fun RestaurantItem(modifier: Modifier = Modifier, restaurant: RestaurantDto?) {
                 }
                 Spacer(modifier.padding(3.dp))
                 Column {
+                    Row { Spacer(modifier.height(5.dp)) }
                     Row {
                         Text("(".plus(restaurant.review_count).plus(")"),
                             modifier.align(Alignment.CenterVertically))
