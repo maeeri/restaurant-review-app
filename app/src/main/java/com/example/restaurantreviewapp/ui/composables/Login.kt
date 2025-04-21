@@ -1,5 +1,6 @@
 package com.example.restaurantreviewapp.ui.composables
 
+import android.view.Display.Mode
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.navArgument
 import com.example.restaurantreviewapp.vms.LoginViewModel
 import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 import com.example.restaurantreviewapp.ui.theme.Turquoise
@@ -63,12 +65,13 @@ fun LoginPage(modifier: Modifier = Modifier,
 fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel, navController: NavController) {
     var repeatPassword by remember { mutableStateOf("") }
     val loginState = model.state.collectAsState().value
-    val aVm = hiltViewModel<AppViewModel>()
 
     if (loginState.success) {
+        model.setSuccess(false)
         LocalSoftwareKeyboardController.current?.hide()
-        aVm.loadUser(loginState.username)
-        navController.navigate("RestaurantListPage")
+        navController.navigate("restaurantfeature") {
+            popUpTo("authfeature")
+        }
     }
     val visible = loginState.signUpVisible
 
@@ -79,7 +82,9 @@ fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel, navControll
         Row(modifier.align(Alignment.CenterHorizontally)) {
             Text(actionText, fontWeight = FontWeight.Bold, fontSize = 20.sp)
         }
-        Row(modifier.align(Alignment.CenterHorizontally).padding(3.dp)) {
+        Row(modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(3.dp)) {
             loginState.error?.let { ErrorTextBox(modifier, it) }
         }
         Row {

@@ -31,13 +31,14 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
     )
     val state = _state.asStateFlow()
     init {
+        initializeFunctionCall()
         getRestaurants()
         getLoggedInUser()
+        cleanUpFunctionCall()
     }
     private fun getLoggedInUser() {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                initializeFunctionCall()
                 val username = appRepository.getLoggedInUser()
                 loadUser(username)
                 val user = appRepository.getUser(username)
@@ -46,23 +47,17 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                 setUserReviews(reviewIds)
             } catch (e: Exception) {
                 setError(e.toString())
-            } finally {
-                cleanUpFunctionCall()
             }
         }
     }
     private fun getRestaurants() {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                initializeFunctionCall()
                 val restaurants = restaurantService.getRestaurants()
                 setRestaurantList(restaurants)
             }
             catch (e: Exception) {
                 setError(e.toString())
-            }
-            finally {
-                cleanUpFunctionCall()
             }
         }
     }
@@ -79,6 +74,19 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             }
             finally {
                 cleanUpFunctionCall()
+            }
+        }
+    }
+    private fun loadUser(username: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val user = appRepository.getUser(username)
+                setUser(UserDto(user.username, user.firstName, user.lastName, user.id))
+                val reviewIds = appRepository.getUserReviews(user.id)
+                setUserReviews(reviewIds)
+            }
+            catch (e: Exception) {
+                setError(e.toString())
             }
         }
     }
@@ -170,26 +178,6 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
                 }
                 setUser(null)
             } catch (e: Exception) {
-                setError(e.toString())
-            } finally {
-                cleanUpFunctionCall()
-            }
-        }
-    }
-    fun loadUser(username: String) {
-        if (_state.value.userState.user != null) {
-            return
-        }
-        viewModelScope.launch(Dispatchers.Default) {
-            try {
-                initializeFunctionCall()
-                println(username)
-                val user = appRepository.getUser(username)
-                setUser(UserDto(user.username, user.firstName, user.lastName, user.id))
-                val reviewIds = appRepository.getUserReviews(user.id)
-                setUserReviews(reviewIds)
-            }
-            catch (e: Exception) {
                 setError(e.toString())
             } finally {
                 cleanUpFunctionCall()

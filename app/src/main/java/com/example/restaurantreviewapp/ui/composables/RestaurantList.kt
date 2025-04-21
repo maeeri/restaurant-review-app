@@ -37,7 +37,6 @@ import com.example.restaurantreviewapp.ui.theme.RestaurantReviewAppTheme
 @Composable
 fun RestaurantList(modifier: Modifier = Modifier, model: AppViewModel, navController: NavController) {
     val restaurants: List<RestaurantDto> = model.state.collectAsState().value.restaurantList
-    println(model.state.collectAsState().value)
     LazyColumn(modifier, verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
         items(restaurants.size) {
             i -> CustomCard(modifier = Modifier

@@ -206,13 +206,11 @@ fun AppNavHost(
 
 @Composable
 inline fun <reified T : ViewModel> NavBackStackEntry.SharedViewModel(navController: NavController): T {
-    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
+    val navGraphRoute = destination.parent?.route?: return hiltViewModel()
     val parentEntry = remember(this) {
         navController.getBackStackEntry(navGraphRoute)
     }
-
     return hiltViewModel(parentEntry)
-
 }
 
 @HiltAndroidApp

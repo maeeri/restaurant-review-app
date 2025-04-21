@@ -3,6 +3,7 @@ package com.example.restaurantreviewapp.vms
 import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.compose.AsyncImagePainter
 import com.example.restaurantreviewapp.dao.User
 import com.example.restaurantreviewapp.dto.LoginState
 import com.example.restaurantreviewapp.repos.AppRepository
@@ -45,7 +46,6 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
     }
     private fun clearLoginInfo() {
         setPassword("")
-        setUsername("")
         setLastName("")
         setFirstName("")
         resetError()
@@ -64,21 +64,34 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             )
         }
     }
-    fun registerUser(repeatPassword: String) {
+    private fun initializeCall() {
         _state.update {
             it.copy(
-                success = false
+                loading = true
             )
         }
+    }
+    private fun cleanUpCall() {
+        _state.update {
+            it.copy(
+                loading = false
+            )
+        }
+    }
+    fun setSuccess(success: Boolean) {
+        _state.update {
+            it.copy(
+                success = success
+            )
+        }
+    }
+    fun registerUser(repeatPassword: String) {
+        setSuccess(false)
         if (!validateSignUp(repeatPassword)) return
 
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        loading = true
-                    )
-                }
+                initializeCall()
                 _state.value.apply {
                     val passwordHash = BCrypt.hashpw(password, BCrypt.gensalt())
                     val user = User(
@@ -91,11 +104,7 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                     appRepository.insertUser(user)
                     val userFromDb = appRepository.getUser(username)
                     if (userFromDb.username == username) {
-                        _state.update {
-                            it.copy(
-                                success = true
-                            )
-                        }
+                        setSuccess(true)
                         clearLoginInfo()
                     } else {
                         addLoginError("User not created. Something went wrong.")
@@ -108,29 +117,17 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             catch (e: Exception) {
                 addLoginError("Something went wrong")
             } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpCall()
             }
         }
     }
     fun login() {
-        _state.update {
-            it.copy(
-                success = false
-            )
-        }
+        setSuccess(false)
         if(!validateSignIn()) return
 
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                _state.update {
-                    it.copy(
-                        loading = true
-                    )
-                }
+                initializeCall()
                 _state.value.apply {
                     if (!BCrypt.checkpw(password, appRepository.getPasswordHash(username))) {
                         addLoginError("Wrong password")
@@ -142,11 +139,7 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                     }
                 }
                 clearLoginInfo()
-                _state.update {
-                    it.copy(
-                        success = true
-                    )
-                }
+                setSuccess(true)
             }
             catch (e: IllegalStateException) {
                 addLoginError("User was not found")
@@ -154,11 +147,7 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
             catch (e: Exception) {
                 addLoginError("Something went wrong")
             } finally {
-                _state.update {
-                    it.copy(
-                        loading = false
-                    )
-                }
+                cleanUpCall()
             }
         }
     }
