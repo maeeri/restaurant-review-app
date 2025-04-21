@@ -101,6 +101,7 @@ class LoginViewModel @Inject constructor(private val appRepository: AppRepositor
                         loggedIn = true
                     )
                     appRepository.insertUser(user)
+                    appRepository.logOthersOut(user.username)
                     val userFromDb = appRepository.getUser(username)
                     if (userFromDb.username == username) {
                         setSuccess(true)

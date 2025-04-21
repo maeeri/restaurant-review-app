@@ -150,7 +150,7 @@ fun RestaurantPage(modifier: Modifier = Modifier,
             floatingActionButton = {
                 if (userIsNotNull) {
                     ExtendedFloatingActionButton(
-                        text = { Text("Add review") },
+                        text = { Text("Review") },
                         icon = { Icon(Icons.Filled.Add, contentDescription = "") },
                         onClick = {
                             showAddReview = true

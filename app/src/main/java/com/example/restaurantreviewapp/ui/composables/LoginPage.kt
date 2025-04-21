@@ -65,8 +65,8 @@ fun SignUpForm(modifier: Modifier = Modifier, model: LoginViewModel, navControll
     if (loginState.success) {
         model.setSuccess(false)
         LocalSoftwareKeyboardController.current?.hide()
-        navController.navigate("restaurantfeature") {
-            popUpTo("authfeature")
+        navController.navigate("restaurantFeature") {
+            popUpTo("authFeature")
         }
     }
     val visible = loginState.signUpVisible

@@ -8,17 +8,13 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -104,19 +100,12 @@ fun CustomCard(modifier: Modifier = Modifier,
 @Composable
 fun AppBar(modifier: Modifier = Modifier,
            text: String,
-           onMenuClick: () -> Unit) {
+           navigationButton: @Composable () -> Unit) {
     TopAppBar({ Text(text)},
         modifier,
-        navigationIcon = {
-        IconButton(onClick = { onMenuClick() }) {
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = "menu",
-                Modifier.defaultMinSize(30.dp, 30.dp)
-            )
-        }
-    },
+        navigationIcon = navigationButton,
         colors = TopAppBarColors(Turquoise, Color.Yellow, Color.White, Color.White, Color.White)
     )
 }
+
 
