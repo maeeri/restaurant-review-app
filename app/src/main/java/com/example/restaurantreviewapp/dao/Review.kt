@@ -2,6 +2,7 @@ package com.example.restaurantreviewapp.dao
 
 import androidx.room.ColumnInfo
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Insert
@@ -15,8 +16,8 @@ import androidx.room.Query
             entity = User::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("user_id"),
-            onDelete = ForeignKey.NO_ACTION,
-            onUpdate = ForeignKey.NO_ACTION
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         )
     ])
 data class Review(
@@ -35,6 +36,11 @@ interface ReviewDao {
     @Query("SELECT review_id FROM reviews WHERE user_id=:userId")
     suspend fun getUserReviews(userId: Int): List<Int>
 
-    @Query("DELETE FROM reviews WHERE review_id = :reviewId AND user_id = :userId")
-    suspend fun deleteByIdAndUserId(reviewId: Int, userId: Int)
+    @Query("SELECT * FROM reviews WHERE review_id=:reviewId")
+    suspend fun getReview(reviewId: Int): Review
+
+    @Delete
+    suspend fun deleteReview(review: Review)
 }
+
+//https://developer.android.com/training/data-storage/room

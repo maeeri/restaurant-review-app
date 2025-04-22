@@ -27,3 +27,5 @@ abstract class AppDatabase: RoomDatabase() {
         }
     }
 }
+
+//https://developer.android.com/training/data-storage/room

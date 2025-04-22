@@ -175,7 +175,8 @@ class AppViewModel @Inject constructor(private val restaurantService: Restaurant
             try {
                 initializeFunctionCall()
                 restaurantService.deleteRating(restaurantId, reviewId)
-                appRepository.deleteReview(reviewId, userId)
+                val review = appRepository.getReview(reviewId)
+                appRepository.deleteReview(review)
                 val restaurant = restaurantService.getRestaurant(restaurantId)
                 val ratings = restaurantService.getRestaurantRatings(restaurantId)
                 setRestaurant(restaurant, ratings)

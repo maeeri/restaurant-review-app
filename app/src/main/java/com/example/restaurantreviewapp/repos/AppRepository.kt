@@ -10,6 +10,7 @@ class AppRepository(private val userDao: UserDao, private val reviewDao: ReviewD
     suspend fun getPasswordHash(username: String) = userDao.getPasswordHash(username)
     suspend fun getLoggedInUser() = userDao.getLoggedInUser()
     suspend fun getUserReviews(userId: Int): List<Int> = reviewDao.getUserReviews(userId)
+    suspend fun getReview(reviewId: Int): Review = reviewDao.getReview(reviewId)
 
     suspend fun insertUser(user: User) = userDao.insert(user)
     suspend fun insertReview(review: Review) = reviewDao.insert(review)
@@ -18,5 +19,5 @@ class AppRepository(private val userDao: UserDao, private val reviewDao: ReviewD
     suspend fun logOthersOut(username: String) = userDao.logOthersOut(username)
     suspend fun logOut(username: String) = userDao.logOut(username)
 
-    suspend fun deleteReview(reviewId: Int, userId: Int) = reviewDao.deleteByIdAndUserId(reviewId, userId)
+    suspend fun deleteReview(review: Review) = reviewDao.deleteReview(review)
 }

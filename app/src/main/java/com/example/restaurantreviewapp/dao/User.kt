@@ -23,8 +23,6 @@ data class User(
     @ColumnInfo("logged_in")
     var loggedIn: Boolean
 )
-
-
 @Dao
 interface UserDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
@@ -48,3 +46,5 @@ interface UserDao {
     @Query("UPDATE users SET logged_in = 0 WHERE username = :username")
     suspend fun logOut(username: String)
 }
+
+//https://developer.android.com/training/data-storage/room
